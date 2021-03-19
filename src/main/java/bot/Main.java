@@ -1,6 +1,5 @@
 package bot;
 
-import bot.Listener;
 import bot.listeners.SpamControl;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;

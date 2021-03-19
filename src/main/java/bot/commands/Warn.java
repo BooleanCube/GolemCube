@@ -18,7 +18,8 @@ public class Warn implements Command
 
     @Override
     public String getHelp() {
-        return "Warns a member!\nUsage: `" + Constants.PREFIX + getCommand() + " <member> <reason>`";
+        return "Warns a member!\n" +
+                "Usage: `" + Constants.PREFIX + getCommand() + " <member> <reason>`";
     }
 
     @Override

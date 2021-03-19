@@ -18,17 +18,24 @@ public class Tools {
     public static void wrongUsage(TextChannel tc, Command c) {
         tc.sendMessage("Wrong Command Usage!\n" + c.getHelp()).queue();
     }
+
     public static void muteMember(Member m, Guild g, int durationSeconds, String reason) {
-        if(!memberToWarns.containsKey(m)) {
+        Role r = g.getRoleById(741287382757933206L);
+
+        if (m.getRoles().stream().anyMatch(it -> it.getIdLong() == r.getIdLong())) {
+            return;
+        }
+
+        if (!memberToWarns.containsKey(m)) {
             ArrayList<Warning> warning = new ArrayList<>();
             warning.add(new Warning(reason, System.currentTimeMillis()));
-            memberToWarns.put(m, new ArrayList<>());
+            memberToWarns.put(m, warning);
         } else {
             memberToWarns.get(m).add(new Warning(reason, System.currentTimeMillis()));
         }
-        Role r = g.getRoleById(741287382757933206L);
+
         assert r != null;
-        if(durationSeconds > -1) {
+        if (durationSeconds > -1) {
             g.addRoleToMember(m, r).queue();
             g.removeRoleFromMember(m, r).queueAfter(durationSeconds, TimeUnit.SECONDS);
             for (TextChannel textChannel : g.getTextChannels()) {
@@ -41,5 +48,15 @@ public class Tools {
                 textChannel.putPermissionOverride(m).deny(Permission.MESSAGE_WRITE).queue();
             }
         }
+    }
+
+    public static void unmuteMember(Member m, Guild g) {
+        Role r = g.getRoleById(741287382757933206L);
+
+        if (m.getRoles().stream().noneMatch(it -> it.getIdLong() == r.getIdLong())) {
+            return;
+        }
+
+        g.removeRoleFromMember(m, r).queue();
     }
 }

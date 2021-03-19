@@ -4,10 +4,10 @@
 - Repuatation Command
 - Report Command
 - Request unmute command
-- Mute command
-- Kick Command
-- Ban command
-- Unmute Command
+* Mute command
+* Kick Command
+* Ban command
+* Unmute Command
 * Spam Control
 * Mass Mention Control
 - Rep leaderboard command
@@ -15,3 +15,4 @@
 * Warn Command
 - suggestion listener
 - set slowmode command
+- Logging

@@ -21,7 +21,8 @@ public class Help implements Command {
 
     @Override
     public String getHelp() {
-        return "Shows you a list of all the commands!\nUsage: `" + Constants.PREFIX + getCommand() + " <command(optional)>`";
+        return "Shows you a list of all the commands!\n" +
+                "Usage: `" + Constants.PREFIX + getCommand() + " <command(optional)>`";
     }
 
     @Override
