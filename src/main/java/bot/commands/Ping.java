@@ -17,16 +17,17 @@ public class Ping implements Command {
 
     @Override
     public String getHelp() {
-        return "Gives you the gateway and rest ping of the bot.\nUsage: `" + Constants.PREFIX + getCommand() + "`";
+        return "Gives you the gateway and rest ping of the bot.\n" +
+                "Usage: `" + Constants.PREFIX + getCommand() + "`";
     }
 
     @Override
     public void run(List<String> args, GuildMessageReceivedEvent event) {
-        if(args.isEmpty()) {
+        if (args.isEmpty()) {
             event.getChannel().sendMessage(new EmbedBuilder()
                     .setTitle("Ping!")
-                    .addField("Gateway Ping", event.getJDA().getGatewayPing()+"ms", true)
-                    .addField("Rest Ping", event.getJDA().getRestPing().complete()+"ms", true)
+                    .addField("Gateway Ping", event.getJDA().getGatewayPing() + "ms", true)
+                    .addField("Rest Ping", event.getJDA().getRestPing().complete() + "ms", true)
                     .build()
             ).queue();
         } else {
