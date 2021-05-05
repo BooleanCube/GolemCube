@@ -1,0 +1,3 @@
+# AutoModeratorDiscordBot
+An Automatic Moderator bot to keep Discord Servers safe! Feel free to make pull requests or start new Issues.
+ in development...
