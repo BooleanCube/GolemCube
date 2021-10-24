@@ -1,8 +1,9 @@
 * = done
 - = to be done
-x = cancelled
 
-- Repuatation Command / End Command
+* Repuatation Command
+- Points Command
+* End Command
 - Report Command
 - Request unmute command
 * Mute command
@@ -15,5 +16,4 @@ x = cancelled
 - Link Control
 * Warn Command
 - suggestion listener
-x set slowmode command
-x Logging
+* purge command

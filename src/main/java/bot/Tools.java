@@ -19,6 +19,29 @@ public class Tools {
         tc.sendMessage("Wrong Command Usage!\n" + c.getHelp()).queue();
     }
 
+    public static Member getEffectiveMember(Guild g, String s) {
+        Member m = null;
+        try {
+            long id = Long.parseLong(s.replaceAll("[<@!>]",""));
+            m = g.getMemberById(id);
+        } catch(Exception e) {
+            try {
+                m = g.getMemberByTag(s);
+            } catch(Exception e2) {
+                try {
+                    m = g.getMembersByEffectiveName(s, true).get(0);
+                } catch(Exception e3) {
+                    try {
+                        m = g.getMembersByName(s, true).get(0);
+                    } catch(Exception e4) {
+                        return null;
+                    }
+                }
+            }
+        }
+        return m;
+    }
+
     public static void muteMember(Member m, Guild g, int durationSeconds, String reason) {
         Role r = g.getRoleById(741287382757933206L);
 
@@ -59,4 +82,47 @@ public class Tools {
 
         g.removeRoleFromMember(m, r).queue();
     }
+
+    public static String secondsToTime(long timeseconds) {
+        StringBuilder builder = new StringBuilder();
+        int years = (int)(timeseconds / (60*60*24*365));
+        if(years>0)
+        {
+            builder.append("**").append(years).append("** years, ");
+            timeseconds = timeseconds % (60*60*24*365);
+        }
+        int weeks = (int)(timeseconds / (60*60*24*365));
+        if(weeks>0)
+        {
+            builder.append("**").append(weeks).append("** weeks, ");
+            timeseconds = timeseconds % (60*60*24*7);
+        }
+        int days = (int)(timeseconds / (60*60*24));
+        if(days>0)
+        {
+            builder.append("**").append(days).append("** days, ");
+            timeseconds = timeseconds % (60*60*24);
+        }
+        int hours = (int)(timeseconds / (60*60));
+        if(hours>0)
+        {
+            builder.append("**").append(hours).append("** hours, ");
+            timeseconds = timeseconds % (60*60);
+        }
+        int minutes = (int)(timeseconds / (60));
+        if(minutes>0)
+        {
+            builder.append("**").append(minutes).append("** minutes, ");
+            timeseconds = timeseconds % (60);
+        }
+        if(timeseconds>0)
+            builder.append("**").append(timeseconds).append("** seconds");
+        String str = builder.toString();
+        if(str.endsWith(", "))
+            str = str.substring(0,str.length()-2);
+        if(str.equals(""))
+            str="**No time**";
+        return str;
+    }
+
 }

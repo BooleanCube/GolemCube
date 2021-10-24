@@ -1,5 +1,7 @@
 package bot;
 
+import bot.listeners.LinkControl;
+import bot.listeners.MassMentionControl;
 import bot.listeners.SpamControl;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
@@ -16,9 +18,11 @@ public class Main {
                 .setChunkingFilter(ChunkingFilter.ALL)
                 .setMemberCachePolicy(MemberCachePolicy.ALL)
                 .enableIntents(GatewayIntent.GUILD_MEMBERS)
-                .setActivity(Activity.watching("over this server!"))
+                .setActivity(Activity.watching("over this cube village! | g!help"))
                 .addEventListeners(new Listener())
                 .addEventListeners(new SpamControl())
+                .addEventListeners(new MassMentionControl())
+                .addEventListeners(new LinkControl())
                 .build().awaitReady();
     }
 }

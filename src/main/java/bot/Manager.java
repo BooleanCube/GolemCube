@@ -18,12 +18,16 @@ public class Manager {
         addCommand(new Ban());
         addCommand(new Mute());
         addCommand(new Unmute());
+        addCommand(new Purge());
+        addCommand(new Reputation());
+        addCommand(new End());
+        addCommand(new Points());
     }
 
     private void addCommand(Command c) {
         if (!commands.containsKey(c.getCommand())) {
             commands.put(c.getCommand(), c);
-            System.out.println("Added " + c.getCommand());
+            System.out.println("Added " + c.getCommand() + " command");
         }
     }
 

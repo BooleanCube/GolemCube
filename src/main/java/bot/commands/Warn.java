@@ -42,7 +42,7 @@ public class Warn implements Command
                     Tools.memberToWarns.putIfAbsent(event.getGuild().getMemberById(id), n);
                     if(Tools.memberToWarns.containsKey(event.getGuild().getMemberById(id))) Tools.memberToWarns.get(event.getGuild().getMemberById(id)).add(new Warning(String.join(" ", args.subList(1, args.size())), System.currentTimeMillis()));
                     event.getChannel().sendMessage("Successfully warned " + event.getGuild().getMemberById(id).getAsMention() + " for `" + String.join(" ", args.subList(1, args.size())) + "`").queue();
-                    if(Tools.memberToWarns.get(event.getGuild().getMemberById(id)).size() >= 4) {
+                    if(Tools.memberToWarns.get(event.getGuild().getMemberById(id)).size() >= 3) {
                         event.getChannel().sendMessage("Banned " + event.getGuild().getMemberById(id).getAsMention() + " from the server because they exceeded `3 warnings`!").queue();
                         event.getGuild().getMemberById(id).ban(7, "Exceeded 3 warnings!").queue();
                     }
