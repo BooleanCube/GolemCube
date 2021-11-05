@@ -30,6 +30,10 @@ public class Reputation implements Command {
     public void run(List<String> args, GuildMessageReceivedEvent event) {
         if(args.size() >= 1) {
             Member m = Tools.getEffectiveMember(event.getGuild(), String.join(" ", args));
+            if(m == null) {
+                event.getChannel().sendMessage("Could not find the member specified! Please try again with different parameters!").queue();
+                return;
+            }
             if(event.getMember().getIdLong() == m.getIdLong()) {
                 event.getChannel().sendMessage(new EmbedBuilder().setDescription("You can't give yourself a reputation point!").build()).queue();
                 return;
