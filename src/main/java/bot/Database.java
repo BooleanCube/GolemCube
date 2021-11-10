@@ -1,6 +1,3 @@
-//simply overcomplicated, might as well use the regular
-//optimizing a cloud based database using data structures is useless..
-
 package bot;
 
 import com.mongodb.client.*;
