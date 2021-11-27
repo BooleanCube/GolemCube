@@ -18,9 +18,7 @@ public class MassMentionControl extends ListenerAdapter {
             if(memberToMentions.containsKey(event.getMember())) {
                 memberToMentions.get(event.getMember()).mentions += event.getMessage().getMentionedMembers().size();
                 memberToMentions.get(event.getMember()).lastTimeMention = System.currentTimeMillis();
-            } else {
-                memberToMentions.put(event.getMember(), new MENTIONS(event.getMessage().getMentionedMembers().size(), System.currentTimeMillis()));
-            }
+            } else memberToMentions.put(event.getMember(), new MENTIONS(1, System.currentTimeMillis()));
         }
         if(memberToMentions.containsKey(event.getMember()) && (System.currentTimeMillis()-memberToMentions.get(event.getMember()).lastTimeMention <= 5000) && memberToMentions.get(event.getMember()).mentions > 8) {
             event.getChannel().sendMessage("Please do not mass mention on this server! You have been muted for `2 hours`!").queue();

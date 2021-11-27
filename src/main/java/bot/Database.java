@@ -5,7 +5,6 @@ import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.Updates;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.events.DisconnectEvent;
 import net.dv8tion.jda.api.events.ReadyEvent;
 import net.dv8tion.jda.api.events.ShutdownEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
@@ -89,7 +88,7 @@ public class Database extends ListenerAdapter {
 
     @Override
     public void onReady(@NotNull ReadyEvent event) {
-        //store the entire database in a hashmap, which will be updated regularly and we won't be updating the database that often
+        //cache the database in a hashmap which is then updated frequently in a separate thread
         //this was done for optimization, because retrieving data from a cloud based database is going to take forever
         List<Member> members = Objects.requireNonNull(event.getJDA().getGuildById("740316079523627128")).getMembers();
         for(Member s : members) {
@@ -108,4 +107,5 @@ public class Database extends ListenerAdapter {
         //update the database as the bot goes offline
 
     }
+
 }

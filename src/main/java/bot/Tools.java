@@ -125,4 +125,9 @@ public class Tools {
         return str;
     }
 
+    public static int boolToBinary(bool b) {
+        if(b) return true;
+        else return false;
+    }
+
 }
