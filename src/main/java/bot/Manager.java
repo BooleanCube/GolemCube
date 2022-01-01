@@ -2,11 +2,15 @@ package bot;
 
 import bot.commands.*;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.*;
 import java.util.regex.Pattern;
 
 public class Manager {
+    Logger LOGGER = LoggerFactory.getLogger(Manager.class);
+
     private final Map<String, Command> commands = new HashMap<>();
 
     Manager() {
@@ -28,7 +32,7 @@ public class Manager {
     private void addCommand(Command c) {
         if (!commands.containsKey(c.getCommand())) {
             commands.put(c.getCommand(), c);
-            System.out.println("Added " + c.getCommand() + " command");
+            LOGGER.info("Added " + c.getCommand() + " command");
         }
     }
 

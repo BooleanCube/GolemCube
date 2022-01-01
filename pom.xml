@@ -21,16 +21,27 @@
     </build>
 
     <dependencies>
+        <!-- https://github.com/DV8FromTheWorld/JDA -->
         <dependency>
             <groupId>net.dv8tion</groupId>
             <artifactId>JDA</artifactId>
             <version>5.0.0-alpha.3</version>
         </dependency>
+
+        <!-- https://github.com/mongodb/mongo-java-driver -->
         <dependency>
             <groupId>org.mongodb</groupId>
             <artifactId>mongodb-driver-sync</artifactId>
-            <version>4.3.4</version>
+            <version>4.4.0</version>
         </dependency>
+
+        <!-- https://github.com/qos-ch/logback -->
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+            <version>1.2.10</version>
+        </dependency>
+
     </dependencies>
 
     <repositories>
@@ -40,6 +51,5 @@
             <url>https://m2.dv8tion.net/releases</url>
         </repository>
     </repositories>
-
 
 </project>
