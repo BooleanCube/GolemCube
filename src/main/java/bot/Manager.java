@@ -1,7 +1,7 @@
 package bot;
 
 import bot.commands.*;
-import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 import java.util.*;
 import java.util.regex.Pattern;
@@ -43,7 +43,7 @@ public class Manager {
         return commands.get(commandName);
     }
 
-    void run(GuildMessageReceivedEvent event) {
+    void run(MessageReceivedEvent event) {
         final String msg = event.getMessage().getContentRaw();
         if (!msg.startsWith(Constants.PREFIX)) {
             return;

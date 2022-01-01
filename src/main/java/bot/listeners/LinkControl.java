@@ -1,6 +1,6 @@
 package bot.listeners;
 
-import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.jetbrains.annotations.NotNull;
 
@@ -8,8 +8,7 @@ import java.util.concurrent.TimeUnit;
 
 public class LinkControl extends ListenerAdapter {
 
-    @Override
-    public void onGuildMessageReceived(@NotNull GuildMessageReceivedEvent event) {
+    public void onMessageReceived(@NotNull MessageReceivedEvent event) {
         if(!event.getChannel().getName().contains("promotion")) {
             String msg = event.getMessage().getContentRaw();
             if(msg.contains("discord.gg/")) {

@@ -2,7 +2,7 @@ package bot.listeners;
 
 import bot.Tools;
 import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
 import javax.annotation.Nonnull;
@@ -13,7 +13,7 @@ public class MassMentionControl extends ListenerAdapter {
     public HashMap<Member, MENTIONS> memberToMentions = new HashMap<>();
 
     @Override
-    public void onGuildMessageReceived(@Nonnull GuildMessageReceivedEvent event) {
+    public void onMessageReceived(@Nonnull MessageReceivedEvent event) {
         if(event.getMessage().getMentionedMembers().size() >= 1) {
             if(memberToMentions.containsKey(event.getMember())) {
                 memberToMentions.get(event.getMember()).mentions += event.getMessage().getMentionedMembers().size();

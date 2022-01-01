@@ -5,7 +5,7 @@ import bot.Constants;
 import bot.Database;
 import bot.Tools;
 import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 import java.util.List;
 
@@ -22,9 +22,9 @@ public class ReputationLeaderboard implements Command {
     }
 
     @Override
-    public void run(List<String> args, GuildMessageReceivedEvent event) {
+    public void run(List<String> args, MessageReceivedEvent event) {
         if(args.isEmpty()) {
-            event.getChannel().sendMessage(
+            event.getChannel().sendMessageEmbeds(
                     new EmbedBuilder()
                             .setDescription(Database.getReputationLB(event.getGuild(), event.getMember()))
                             .build()

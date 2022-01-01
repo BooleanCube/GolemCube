@@ -20,11 +20,13 @@ public class Main {
                 .setMemberCachePolicy(MemberCachePolicy.ALL)
                 .enableIntents(GatewayIntent.GUILD_MEMBERS)
                 .setActivity(Activity.watching("over this village! | g!help"))
-                .addEventListeners(new Listener())
-                .addEventListeners(new SpamControl())
-                .addEventListeners(new MassMentionControl())
-                .addEventListeners(new LinkControl())
-                .addEventListeners(new Suggestions())
+                .addEventListeners(
+                        new Listener(),
+                        new SpamControl(),
+                        new MassMentionControl(),
+                        new LinkControl(),
+                        new Suggestions()
+                )
                 .build().awaitReady();
     }
 }
