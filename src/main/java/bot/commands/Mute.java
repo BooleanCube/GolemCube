@@ -6,8 +6,9 @@ import bot.Tools;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.TextChannel;
-import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 import java.util.List;
 
@@ -25,8 +26,8 @@ public class Mute implements Command {
     }
 
     @Override
-    public void run(List<String> args, GuildMessageReceivedEvent event) {
-        final TextChannel channel = event.getChannel();
+    public void run(List<String> args, MessageReceivedEvent event) {
+        final MessageChannel channel = event.getChannel();
         final Message message = event.getMessage();
         final Member member = event.getMember();
 

@@ -1,8 +1,7 @@
 package bot;
 
-import bot.Constants;
 import net.dv8tion.jda.api.events.ReadyEvent;
-import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
 import javax.annotation.Nonnull;
@@ -16,8 +15,8 @@ public class Listener extends ListenerAdapter {
     }
 
     @Override
-    public void onGuildMessageReceived(@Nonnull GuildMessageReceivedEvent event) {
-        if(event.getMessage().getContentRaw().equalsIgnoreCase(Constants.PREFIX+"shutdown") && (event.getAuthor().getIdLong()==Constants.OWNERID)) {
+    public void onMessageReceived(@Nonnull MessageReceivedEvent event) {
+        if (event.getMessage().getContentRaw().equalsIgnoreCase(Constants.PREFIX + "shutdown") && (event.getAuthor().getIdLong() == Constants.OWNERID)) {
             event.getJDA().shutdown();
             System.exit(0);
         }

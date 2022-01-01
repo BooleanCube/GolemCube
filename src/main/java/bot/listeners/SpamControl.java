@@ -5,7 +5,7 @@ import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.events.ReadyEvent;
-import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
 import javax.annotation.Nonnull;
@@ -21,7 +21,7 @@ public class SpamControl extends ListenerAdapter {
     HashMap<Member, MessageHistory> messageTracking = new HashMap<>();
 
     @Override
-    public void onGuildMessageReceived(@Nonnull GuildMessageReceivedEvent event) {
+    public void onMessageReceived(@Nonnull MessageReceivedEvent event) {
         //5 messages in under 3 seconds then mute for 5 minutes and add a warning!
         if(blackListedChannels.contains(event.getChannel()) || blackListedMembers.contains(event.getMember())) {
             for(Role r : blackListedRoles) {

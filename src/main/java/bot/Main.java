@@ -15,16 +15,19 @@ import javax.security.auth.login.LoginException;
 
 public class Main {
     public static void main(String[] args) throws LoginException, InterruptedException {
+        // GET A COOL LOGGER
         JDA AutoModerator = JDABuilder.createDefault(Secrets.TOKEN)
                 .setChunkingFilter(ChunkingFilter.ALL)
                 .setMemberCachePolicy(MemberCachePolicy.ALL)
                 .enableIntents(GatewayIntent.GUILD_MEMBERS)
                 .setActivity(Activity.watching("over this village! | g!help"))
-                .addEventListeners(new Listener())
-                .addEventListeners(new SpamControl())
-                .addEventListeners(new MassMentionControl())
-                .addEventListeners(new LinkControl())
-                .addEventListeners(new Suggestions())
+                .addEventListeners(
+                        new Listener(),
+                        new SpamControl(),
+                        new MassMentionControl(),
+                        new LinkControl(),
+                        new Suggestions()
+                )
                 .build().awaitReady();
     }
 }

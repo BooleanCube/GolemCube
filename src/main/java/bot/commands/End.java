@@ -4,7 +4,7 @@ import bot.Command;
 import bot.Constants;
 import bot.Tools;
 import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 import java.util.List;
 
@@ -21,9 +21,9 @@ public class End implements Command {
     }
 
     @Override
-    public void run(List<String> args, GuildMessageReceivedEvent event) {
-        if(args.isEmpty()) {
-            event.getChannel().sendMessage(
+    public void run(List<String> args, MessageReceivedEvent event) {
+        if (args.isEmpty()) {
+            event.getChannel().sendMessageEmbeds(
                     new EmbedBuilder()
                             .setTitle("Done Recieving Help?")
                             .setDescription("Please use the `" + Constants.PREFIX + "rep` command to give a reputation point to your helper to show your appreciation to them!")
