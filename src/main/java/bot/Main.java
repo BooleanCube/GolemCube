@@ -15,6 +15,7 @@ import javax.security.auth.login.LoginException;
 
 public class Main {
     public static void main(String[] args) throws LoginException, InterruptedException {
+        // GET A COOL LOGGER
         JDA AutoModerator = JDABuilder.createDefault(Secrets.TOKEN)
                 .setChunkingFilter(ChunkingFilter.ALL)
                 .setMemberCachePolicy(MemberCachePolicy.ALL)
