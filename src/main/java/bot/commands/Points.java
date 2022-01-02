@@ -34,7 +34,7 @@ public class Points implements Command {
                 new EmbedBuilder()
                         .setAuthor(m.getEffectiveName(), m.getUser().getAvatarUrl(), m.getUser().getEffectiveAvatarUrl())
                         .addField("Points:", String.valueOf(Database.getReputation(m)), true)
-                        .addField("Rank: ", String.valueOf(Database.getReputationRank(event.getGuild(), m)), true)
+                        .addField("Rank: ", String.valueOf(Database.getReputationRank(m)), true)
                         .build()
         ).queue();
     }

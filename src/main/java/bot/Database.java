@@ -3,7 +3,6 @@ package bot;
 import com.mongodb.client.*;
 import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.Updates;
-import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.ReadyEvent;
@@ -94,16 +93,21 @@ public class Database extends ListenerAdapter {
                 .collect(Collectors.toList());
     }
 
-    public static int getReputationRank(Guild g, Member m) {
-        // TODO:
+    public static int getReputationRank(Member m) {
+        ArrayList<Map.Entry<String, Integer>> entries = new ArrayList<>(board.entrySet());
+        entries.sort((a, b) -> (b.getValue()).compareTo(a.getValue()));
 
-        ArrayList<Integer> points = new ArrayList<>();
-        List<Member> members = g.getMembers();
-        for (Member s : members) {
-            if (s.getUser().isBot()) continue;
-            points.add(Database.getReputation(s));
+        int rank = 1;
+        int lastValue = entries.get(0).getValue();
+
+        for (Map.Entry<String, Integer> e : entries) {
+            Integer value = e.getValue();
+            if (value != lastValue) rank++;
+
+            if(e.getKey().equals(m.getId())) break;
         }
-        return points.indexOf(Database.getReputation(m)) + 1;
+
+        return rank;
     }
 
     @Override
