@@ -1,10 +1,11 @@
 package bot.listeners;
 
-import bot.BMember;
 import bot.Database;
+import bot.ReputationsResult;
 import bot.commands.ReputationLeaderboard;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.interaction.ButtonClickEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
@@ -30,6 +31,8 @@ public class ReputationLeaderboardButtons extends ListenerAdapter {
                 .filter(it -> it.getLabel().equals("Done"))
                 .findAny().get().getId().split(":")[2];
 
+        User user = event.getMember().getUser();
+
         switch (buttonId) {
             case "delete": {
                 event.deferEdit().queue();
@@ -43,24 +46,29 @@ public class ReputationLeaderboardButtons extends ListenerAdapter {
             break;
             case "next": {
                 event.deferEdit().queue();
-                editMessage(message, true, userId, Integer.parseInt(page));
+                editMessage(message, true, user, Integer.parseInt(page));
             }
             break;
             case "previous": {
                 event.deferEdit().queue();
-                editMessage(message, false, userId, Integer.parseInt(page));
+                editMessage(message, false, user, Integer.parseInt(page));
             }
             break;
         }
     }
 
-    private void editMessage(Message msg, boolean next, String userId, int page) {
+    private void editMessage(Message msg, boolean next, User user, int page) {
         page = next ? page + 1 : page - 1;
 
-        final List<List<BMember>> guildsList = Database.getMemberReputations();
+        ReputationsResult reputations = Database.getMemberReputationsWithUser(user);
+        List<List<ReputationsResult.BMember>> guildsList = reputations.getMemberReputations();
         if (page == 0 || page == guildsList.size()) return;
 
-        EmbedBuilder embed = new EmbedBuilder().setDescription("```" + ReputationLeaderboard.getTable(guildsList.get(page - 1)) + "```");
+        ReputationsResult.BMember member = reputations.getMember();
+        EmbedBuilder embed = new EmbedBuilder().setDescription("```" + ReputationLeaderboard.getTable(guildsList.get(page - 1)) + "```")
+                .addField("Your Rank", "`" + member.getRank() + ". " + member.getName() + " : " + member.getPoints() + "`", false);
+
+        String userId = user.getId();
 
         msg.editMessageEmbeds(embed.build()).queue();
         msg.editMessageComponents(ActionRow.of(

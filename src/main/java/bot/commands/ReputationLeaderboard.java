@@ -2,6 +2,7 @@ package bot.commands;
 
 import bot.*;
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.interactions.components.Button;
 
@@ -21,11 +22,17 @@ public class ReputationLeaderboard implements Command {
 
     @Override
     public void run(List<String> args, MessageReceivedEvent event) {
-        final String userId = event.getAuthor().getId();
+        User author = event.getAuthor();
+        String userId = author.getId();
 
         try {
-            final int page = args.isEmpty() ? 1 : Integer.parseInt(args.get(0));
-            EmbedBuilder embed = new EmbedBuilder().setDescription("```" + getTable(Database.getMemberReputations().get(page - 1)) + "```");
+
+            int page = args.isEmpty() ? 1 : Integer.parseInt(args.get(0));
+            ReputationsResult reputations = Database.getMemberReputationsWithUser(author);
+            ReputationsResult.BMember member = reputations.getMember();
+
+            EmbedBuilder embed = new EmbedBuilder().setDescription("```" + getTable(reputations.getMemberReputations().get(page - 1)) + "```")
+                    .addField("Your Rank", "`" + member.getRank() + ". " + member.getName() + " : " + member.getPoints() + "`", false);
 
             event.getChannel().sendMessageEmbeds(embed.build())
                     .setActionRow(
@@ -41,7 +48,7 @@ public class ReputationLeaderboard implements Command {
         }
     }
 
-    public static String getTable(List<BMember> memberList) {
+    public static String getTable(List<ReputationsResult.BMember> memberList) {
         StringBuilder table = new StringBuilder();
         final int nameSize = memberList.stream()
                 .mapToInt(it -> Math.min(it.getName().length(), 22))
@@ -63,7 +70,7 @@ public class ReputationLeaderboard implements Command {
         table.append(String.format(rowFormat, "Rank ", "Name", "Points"));
         table.append(divider);
 
-        for (final BMember member : memberList) {
+        for (final ReputationsResult.BMember member : memberList) {
             String name = member.getName();
             table.append(String.format(rowFormat, member.getRank() + ".", name.substring(0, Math.min(22, name.length())), member.getPoints()));
         }
