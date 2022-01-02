@@ -26,7 +26,7 @@ public class Database extends ListenerAdapter {
         client = MongoClients.create(Secrets.DatabaseURI);
         db = client.getDatabase("BooleanCube");
 
-        if (db.listCollectionNames().first() == null) {  // Only one collection so yea.
+        if (!db.listCollectionNames().into(new ArrayList<>()).contains(reputationClusterName)) {
             db.createCollection(reputationClusterName);
             reputationCollection.insertOne(new Document().append("_id", reputationClusterName));
         }
@@ -46,7 +46,7 @@ public class Database extends ListenerAdapter {
     }
 
     public static int getDBPoints(Member m) {
-        try (MongoCursor<Document> cursor = reputationCollection.find().iterator()) {
+        try (MongoCursor<Document> cursor = reputationCollection.find(Filters.eq("_id", reputationClusterName)).iterator()) {
             Document reputationTracker = cursor.next();
             return reputationTracker.getInteger(m.getId());
         } catch (NullPointerException npe) {
