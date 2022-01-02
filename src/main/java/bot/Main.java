@@ -14,7 +14,7 @@ public class Main {
     public static void main(String[] args) throws LoginException, InterruptedException {
         Database.setupDatabase();
 
-        JDA AutoModerator = JDABuilder.createDefault(Secrets.TOKEN)
+        JDABuilder.createDefault(Secrets.TOKEN)
                 .setChunkingFilter(ChunkingFilter.ALL)
                 .setMemberCachePolicy(MemberCachePolicy.ALL)
                 .enableIntents(GatewayIntent.GUILD_MEMBERS)
