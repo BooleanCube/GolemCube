@@ -10,11 +10,10 @@
 * Unmute Command
 * Spam Control
 * Mass Mention Control
-- Rep leaderboard command
+* Rep leaderboard command
 * Link Control
 * Warn Command
 * suggestion listener
 * purge command
 - help command
-- xp (if needed)
 - setup database caching and usage
