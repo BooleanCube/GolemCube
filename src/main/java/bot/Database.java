@@ -47,8 +47,10 @@ public class Database extends ListenerAdapter {
         String id = m.getId();
         int reps = board.computeIfAbsent(id, a -> 0) + 1;
 
-        reputationCollection.findOneAndUpdate(Filters.eq("_id", reputationClusterName),
-                Updates.set(id, reps));
+        new Thread(() ->
+                reputationCollection.findOneAndUpdate(Filters.eq("_id", reputationClusterName),
+                        Updates.set(id, reps))
+        ).start();
         board.put(id, reps);
 
         LOGGER.info("Updated reputation of {} to {}", m.getUser().getAsTag(), reps);
