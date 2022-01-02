@@ -22,7 +22,7 @@ public class Database extends ListenerAdapter {
     static MongoDatabase db;
     static MongoCollection<Document> reputationCollection;
 
-    static HashMap<Integer, ArrayList<Member>> board = new HashMap<>();
+    static HashMap<String, Integer> board = new HashMap<>();
 
     static String reputationClusterName = "ReputationTracker";
 
@@ -32,44 +32,41 @@ public class Database extends ListenerAdapter {
 
         if (!db.listCollectionNames().into(new ArrayList<>()).contains(reputationClusterName)) {
             db.createCollection(reputationClusterName);
-            LOGGER.info("Created {} collection", reputationCollection);
+            LOGGER.info("Created {} collection", reputationClusterName);
         }
 
         reputationCollection = db.getCollection(reputationClusterName);
 
         if (reputationCollection.countDocuments(Filters.eq("_id", reputationClusterName)) == 0) {
             reputationCollection.insertOne(new Document().append("_id", reputationClusterName));
-            System.out.println("DOCUMENT CREATED");
+            LOGGER.info("Created {} in {} collection", reputationClusterName, reputationClusterName);
         }
     }
 
     public static void addReputation(Member m) {
-        int reps = 1;
-        try (MongoCursor<Document> cursor = reputationCollection.find(Filters.eq("_id", reputationClusterName)).iterator()) {
-            Document reputationTracker = cursor.next();
-            reps = reputationTracker.getInteger(m.getId()) + 1;
-        } catch (NullPointerException ignored) {
-        }
+        String id = m.getId();
+        int reps = board.computeIfAbsent(id, a -> 0) + 1;
 
-        reputationCollection.findOneAndUpdate(Filters.eq("_id", reputationClusterName), Updates.set(m.getId(), reps));
+        reputationCollection.findOneAndUpdate(Filters.eq("_id", reputationClusterName),
+                Updates.set(id, reps));
+        board.put(id, reps);
+
+        LOGGER.info("Updated reputation of {} to {}", m.getUser().getAsTag(), reps);
     }
 
-    public static int getDBPoints(Member m) {
-        try (MongoCursor<Document> cursor = reputationCollection.find(Filters.eq("_id", reputationClusterName)).iterator()) {
-            Document reputationTracker = cursor.next();
-            return reputationTracker.getInteger(m.getId());
-        } catch (NullPointerException npe) {
-            return 0;
-        }
+    public static int getReputation(Member m) {
+        return board.computeIfAbsent(m.getId(), id -> 0);
     }
 
     public static String getReputationLB(Guild g, Member m) {
+        // TODO:
+        /*
         ArrayList<Integer> points = new ArrayList<>();
 
         List<Member> members = g.getMembers();
         for (Member s : members) {
             if (s.getUser().isBot()) continue;
-            int sPoints = Database.getReputationPoints(s);
+            int sPoints = Database.getReputation(s);
             points.add(sPoints);
         }
         Collections.sort(points);
@@ -85,44 +82,38 @@ public class Database extends ListenerAdapter {
         }
         lb.append("\n").append("**#").append(Database.getReputationRank(g, m)).append(": ").append(m.getUser().getAsTag()).append("**");
         return lb.toString();
+        */
+        return "";
     }
 
     public static int getReputationRank(Guild g, Member m) {
+        // TODO:
+
         ArrayList<Integer> points = new ArrayList<>();
         List<Member> members = g.getMembers();
         for (Member s : members) {
             if (s.getUser().isBot()) continue;
-            points.add(Database.getReputationPoints(s));
+            points.add(Database.getReputation(s));
         }
-        return points.indexOf(Database.getReputationPoints(m)) + 1;
-    }
-
-    public static int getReputationPoints(Member m) {
-        for (int k : board.keySet()) if (board.get(k).contains(m)) return k;
-        return -1;
+        return points.indexOf(Database.getReputation(m)) + 1;
     }
 
     @Override
     public void onReady(@NotNull ReadyEvent event) {
         //cache the database in a hashmap which is then updated frequently in a separate thread
         //this was done for optimization, because retrieving data from a cloud based database is going to take forever
-        List<Member> members = Objects.requireNonNull(event.getJDA().getGuildById("740316079523627128")).getMembers();
-        for (Member s : members) {
-            if (s.getUser().isBot()) continue;
-            int points = Database.getDBPoints(s);
-            if (board.containsKey(points)) board.get(points).add(s);
-            else {
-                ArrayList<Member> a = new ArrayList<>();
-                a.add(s);
-                board.put(points, a);
+        try (MongoCursor<Document> cursor =
+                     reputationCollection.find(Filters.eq("_id", reputationClusterName)).iterator()) {
+            Document reputationTracker = cursor.next();
+
+            for (String id : reputationTracker.keySet()) {
+                board.put(id, reputationTracker.getInteger(id));
             }
         }
     }
 
     @Override
     public void onShutdown(@NotNull ShutdownEvent event) {
-        //update the database as the bot goes offline
-
     }
 
 }
