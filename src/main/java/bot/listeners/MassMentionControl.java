@@ -7,6 +7,7 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
 import javax.annotation.Nonnull;
 import java.util.HashMap;
+import java.util.concurrent.TimeUnit;
 
 public class MassMentionControl extends ListenerAdapter {
 
@@ -22,7 +23,8 @@ public class MassMentionControl extends ListenerAdapter {
         }
         if(memberToMentions.containsKey(event.getMember()) && (System.currentTimeMillis()-memberToMentions.get(event.getMember()).lastTimeMention <= 5000) && memberToMentions.get(event.getMember()).mentions > 8) {
             event.getChannel().sendMessage("Please do not mass mention on this server! You have been muted for `2 hours`!").queue();
-            Tools.muteMember(event.getMember(), event.getGuild(), 7200, "Mass Mention");
+            event.getGuild().timeoutFor(event.getMember(), 2, TimeUnit.DAYS).queue();
+            Tools.muteMember(event.getMember(), event.getGuild(), "Mass Mention");
         }
     }
 

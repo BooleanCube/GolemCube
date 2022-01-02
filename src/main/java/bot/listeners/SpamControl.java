@@ -12,6 +12,7 @@ import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 
 public class SpamControl extends ListenerAdapter {
     static ArrayList<TextChannel> blackListedChannels = new ArrayList<>();
@@ -39,7 +40,8 @@ public class SpamControl extends ListenerAdapter {
             int msgNum = messageTracking.get(event.getMember()).msgNum++;
             long lastTimeSent = messageTracking.get(event.getMember()).lastTimeSent;
             if(msgNum == scmessages && System.currentTimeMillis()-lastTimeSent <= scseconds*1000) {
-                Tools.muteMember(event.getMember(), event.getGuild(), 300, "Spamming");
+                event.getGuild().timeoutFor(Objects.requireNonNull(event.getMember()), 5, TimeUnit.MINUTES).queue();
+                Tools.muteMember(event.getMember(), event.getGuild(), "Spamming");
                 Objects.requireNonNull(event.getMember()).getUser().openPrivateChannel().queue(c -> {
                     c.sendMessage("You have been muted for **5 minutes** for spamming in a channel! You have also been given **1 warning**!").queue();
                 });
