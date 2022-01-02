@@ -1,7 +1,9 @@
 package bot;
 
-import bot.listeners.*;
-import net.dv8tion.jda.api.JDA;
+import bot.listeners.LinkControl;
+import bot.listeners.MassMentionControl;
+import bot.listeners.SpamControl;
+import bot.listeners.Suggestions;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.requests.GatewayIntent;
@@ -13,7 +15,6 @@ import javax.security.auth.login.LoginException;
 public class Main {
     public static void main(String[] args) throws LoginException, InterruptedException {
         Database.setupDatabase();
-
         JDABuilder.createDefault(Secrets.TOKEN)
                 .setChunkingFilter(ChunkingFilter.ALL)
                 .setMemberCachePolicy(MemberCachePolicy.ALL)
@@ -21,12 +22,10 @@ public class Main {
                 .setActivity(Activity.watching("over this village! | g!help"))
                 .addEventListeners(
                         new Listener(),
-                        new SpamControl(),
+                        //new SpamControl(), (removed spam control for now because its not as harmful) (set new boundaries later)
                         new MassMentionControl(),
                         new LinkControl(),
-                        new Suggestions(),
-                        new Database(),
-                        new ReputationLeaderboardButtons()
+                        new Suggestions()
                 )
                 .build().awaitReady();
     }

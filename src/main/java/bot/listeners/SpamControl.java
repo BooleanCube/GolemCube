@@ -41,6 +41,7 @@ public class SpamControl extends ListenerAdapter {
             int msgNum = messageTracking.get(event.getMember()).msgNum++;
             long lastTimeSent = messageTracking.get(event.getMember()).lastTimeSent;
             if(msgNum == scmessages && System.currentTimeMillis()-lastTimeSent <= scseconds*1000) {
+
                 // TODO: timeout in alpha.4
                 // event.getGuild().timeoutFor(Objects.requireNonNull(event.getMember()), 5, TimeUnit.MINUTES).queue();
                 Tools.muteMember(event.getMember(), event.getGuild(), "Spamming");
