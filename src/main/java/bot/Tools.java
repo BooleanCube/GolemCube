@@ -39,36 +39,12 @@ public class Tools {
         return m;
     }
 
-    // TODO: Change mute to timeout
-    public static void muteMember(Member m, Guild g, int durationSeconds, String reason) {
-        Role r = g.getRoleById(741287382757933206L);
-
-        if (m.getRoles().stream().anyMatch(it -> it.getIdLong() == r.getIdLong())) {
-            return;
-        }
-
+    public static void muteMember(Member m, Guild g, String reason) {
         if (!memberToWarns.containsKey(m)) {
             ArrayList<Warning> warning = new ArrayList<>();
             warning.add(new Warning(reason, System.currentTimeMillis()));
             memberToWarns.put(m, warning);
-        } else {
-            memberToWarns.get(m).add(new Warning(reason, System.currentTimeMillis()));
-        }
-
-        assert r != null;
-        if (durationSeconds > -1) {
-            g.addRoleToMember(m, r).queue();
-            g.removeRoleFromMember(m, r).queueAfter(durationSeconds, TimeUnit.SECONDS);
-            for (TextChannel textChannel : g.getTextChannels()) {
-                textChannel.putPermissionOverride(m).deny(Permission.MESSAGE_SEND).queue();
-                textChannel.putPermissionOverride(m).grant(Permission.MESSAGE_SEND).queueAfter(durationSeconds, TimeUnit.SECONDS);
-            }
-        } else {
-            g.addRoleToMember(m, r).queue();
-            for (TextChannel textChannel : g.getTextChannels()) {
-                textChannel.putPermissionOverride(m).deny(Permission.MESSAGE_SEND).queue();
-            }
-        }
+        } else memberToWarns.get(m).add(new Warning(reason, System.currentTimeMillis()));
     }
 
     // TODO:
