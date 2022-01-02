@@ -5,15 +5,23 @@ import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.Updates;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.ReadyEvent;
 import net.dv8tion.jda.api.events.ShutdownEvent;
+import net.dv8tion.jda.api.events.user.update.UserUpdateDiscriminatorEvent;
+import net.dv8tion.jda.api.events.user.update.UserUpdateNameEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.bson.Document;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 public class Database extends ListenerAdapter {
     static Logger LOGGER = LoggerFactory.getLogger(Database.class);
@@ -23,6 +31,7 @@ public class Database extends ListenerAdapter {
     static MongoCollection<Document> reputationCollection;
 
     static HashMap<String, Integer> board = new HashMap<>();
+    static HashMap<String, String> nameCache = new HashMap<>();
 
     static String reputationClusterName = "ReputationTracker";
 
@@ -60,32 +69,29 @@ public class Database extends ListenerAdapter {
         return board.computeIfAbsent(m.getId(), id -> 0);
     }
 
-    public static String getReputationLB(Guild g, Member m) {
-        // TODO:
-        /*
-        ArrayList<Integer> points = new ArrayList<>();
+    public static List<List<BMember>> getMemberReputations() {
+        ArrayList<Map.Entry<String, Integer>> entries = new ArrayList<>(board.entrySet());
+        entries.sort((a, b) -> (b.getValue()).compareTo(a.getValue()));
 
-        List<Member> members = g.getMembers();
-        for (Member s : members) {
-            if (s.getUser().isBot()) continue;
-            int sPoints = Database.getReputation(s);
-            points.add(sPoints);
+        int rank = 1;
+        int lastValue = entries.get(0).getValue();
+        List<BMember> fullList = new ArrayList<>();
+
+        for (Map.Entry<String, Integer> e : entries) {
+            Integer value = e.getValue();
+            if (value != lastValue) rank++;
+
+            BMember m = new BMember(rank, nameCache.getOrDefault(e.getKey(), "Unknown#0000"), value);
+            fullList.add(m);
         }
-        Collections.sort(points);
-        Collections.reverse(points);
-        StringBuilder lb = new StringBuilder();
-        outer:
-        for (int i = 0; i < 10; i++) {
-            if (i > points.size()) break;
-            while (board.get(points.get(i)).size() > 0) {
-                lb.append("**#").append(i + 1).append(":** ").append(board.get(points.get(i)).remove(0).getUser().getAsTag()).append(" (").append(points.get(i)).append(" points)").append("\n");
-                if (lb.toString().split("\\r?\\n").length >= 10) break outer;
-            }
-        }
-        lb.append("\n").append("**#").append(Database.getReputationRank(g, m)).append(": ").append(m.getUser().getAsTag()).append("**");
-        return lb.toString();
-        */
-        return "";
+
+        return IntStream.range(0, fullList.size())
+                .boxed()
+                .collect(Collectors.groupingBy(i -> i / 10))
+                .values()
+                .stream()
+                .map(indices -> indices.stream().map(fullList::get).collect(Collectors.toList()))
+                .collect(Collectors.toList());
     }
 
     public static int getReputationRank(Guild g, Member m) {
@@ -109,9 +115,30 @@ public class Database extends ListenerAdapter {
             Document reputationTracker = cursor.next();
 
             for (String id : reputationTracker.keySet()) {
+                if (id.equals("_id")) continue;
+
                 board.put(id, reputationTracker.getInteger(id));
             }
         }
+        LOGGER.info("Board Cache Completed");
+
+        event.getJDA().getUsers().forEach(user -> nameCache.put(user.getId(), user.getAsTag()));
+        LOGGER.info("Name Cache Completed");
+    }
+
+    @Override
+    public void onUserUpdateName(@NotNull UserUpdateNameEvent event) {
+        updateName(event.getUser());
+    }
+
+    @Override
+    public void onUserUpdateDiscriminator(@NotNull UserUpdateDiscriminatorEvent event) {
+        updateName(event.getUser());
+    }
+
+    private void updateName(User user) {
+        if (user.isBot()) return;
+        nameCache.put(user.getId(), user.getAsTag());
     }
 
     @Override

@@ -1,9 +1,6 @@
 package bot;
 
-import bot.listeners.LinkControl;
-import bot.listeners.MassMentionControl;
-import bot.listeners.SpamControl;
-import bot.listeners.Suggestions;
+import bot.listeners.*;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.Activity;
@@ -27,7 +24,9 @@ public class Main {
                         new SpamControl(),
                         new MassMentionControl(),
                         new LinkControl(),
-                        new Suggestions()
+                        new Suggestions(),
+                        new Database(),
+                        new ReputationLeaderboardButtons()
                 )
                 .build().awaitReady();
     }
