@@ -10,10 +10,13 @@ import net.dv8tion.jda.api.events.ShutdownEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.bson.Document;
 import org.jetbrains.annotations.NotNull;
+import org.slf4j.LoggerFactory;
 
 import java.util.*;
 
 public class Database extends ListenerAdapter {
+
+
     static MongoClient client;
     static MongoDatabase db;
     static MongoCollection<Document> reputationCollection;
@@ -26,12 +29,10 @@ public class Database extends ListenerAdapter {
         client = MongoClients.create(Secrets.DatabaseURI);
         db = client.getDatabase("BooleanCube");
 
-        if (!db.listCollectionNames().into(new ArrayList<>()).contains(reputationClusterName)) {
-            db.createCollection(reputationClusterName);
-            reputationCollection.insertOne(new Document().append("_id", reputationClusterName));
-        }
-
+        boolean exists = db.listCollectionNames().into(new ArrayList<>()).contains(reputationClusterName);
+        if (!exists) db.createCollection(reputationClusterName);
         reputationCollection = db.getCollection(reputationClusterName);
+        if (!exists) reputationCollection.insertOne(new Document().append("_id", reputationClusterName));
     }
 
     public static void addReputation(Member m) {
