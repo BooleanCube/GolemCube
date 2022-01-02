@@ -1,6 +1,7 @@
 package bot.listeners;
 
 import bot.Tools;
+import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.TextChannel;
@@ -12,6 +13,7 @@ import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 
 public class SpamControl extends ListenerAdapter {
     static ArrayList<TextChannel> blackListedChannels = new ArrayList<>();
@@ -31,7 +33,7 @@ public class SpamControl extends ListenerAdapter {
             }
             return;
         }
-        int scmessages = 5;
+        int scmessages = 9;
         int scseconds = 3;
         if(!messageTracking.containsKey(event.getMember())) {
             messageTracking.put(event.getMember(), new MessageHistory(1, System.currentTimeMillis()));
@@ -39,14 +41,15 @@ public class SpamControl extends ListenerAdapter {
             int msgNum = messageTracking.get(event.getMember()).msgNum++;
             long lastTimeSent = messageTracking.get(event.getMember()).lastTimeSent;
             if(msgNum == scmessages && System.currentTimeMillis()-lastTimeSent <= scseconds*1000) {
-                Tools.muteMember(event.getMember(), event.getGuild(), 300, "Spamming");
+                event.getGuild().timeoutFor(Objects.requireNonNull(event.getMember()), 5, TimeUnit.MINUTES).queue();
+                Tools.muteMember(event.getMember(), event.getGuild(), "Spamming");
                 Objects.requireNonNull(event.getMember()).getUser().openPrivateChannel().queue(c -> {
-                    c.sendMessage("You have been muted for **5 minutes** for spamming in a channel! You have also been given **1 warning**!").queue();
+                    c.sendMessageEmbeds(new EmbedBuilder().setDescription("You have been muted for **5 minutes** for spamming in a channel! You have also been given **1 warning**!").build()).queue();
                 });
                 event.getChannel().sendMessage("Please do not spam! You have been muted for `5 minutes`!").queue();
                 if(Tools.memberToWarns.get(event.getMember()).size() >= 4) {
-                    event.getChannel().sendMessage("Banned " + event.getMember().getAsMention() + " from the server because they exceeded `3 warnings`!").queue();
-                    event.getMember().ban(7, "Exceeded 3 warnings!").queue();
+                    event.getChannel().sendMessage("Kicked " + event.getMember().getAsMention() + " from the server because they exceeded `3 warnings`!").queue();
+                    event.getMember().kick("Exceeded 3 warnings!").queue();
                 }
             } else if(System.currentTimeMillis()-lastTimeSent > scseconds*1000) {
                 messageTracking.get(event.getMember()).msgNum = 1;
