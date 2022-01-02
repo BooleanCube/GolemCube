@@ -33,8 +33,8 @@ public class Points implements Command {
         event.getChannel().sendMessageEmbeds(
                 new EmbedBuilder()
                         .setAuthor(m.getEffectiveName(), m.getUser().getAvatarUrl(), m.getUser().getEffectiveAvatarUrl())
-                        .addField("Points:", String.valueOf(Database.getReputationPoints(m)), true)
-                        .addField("Rank: ", String.valueOf(Database.getReputationRank(event.getGuild(), m)), true)
+                        .addField("Points:", String.valueOf(Database.getReputation(m)), true)
+                        .addField("Rank: ", String.valueOf(Database.getReputationRank(m)), true)
                         .build()
         ).queue();
     }

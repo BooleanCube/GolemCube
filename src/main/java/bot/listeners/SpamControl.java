@@ -41,7 +41,8 @@ public class SpamControl extends ListenerAdapter {
             int msgNum = messageTracking.get(event.getMember()).msgNum++;
             long lastTimeSent = messageTracking.get(event.getMember()).lastTimeSent;
             if(msgNum == scmessages && System.currentTimeMillis()-lastTimeSent <= scseconds*1000) {
-                event.getGuild().timeoutFor(Objects.requireNonNull(event.getMember()), 5, TimeUnit.MINUTES).queue();
+                // TODO: timeout in alpha.4
+                // event.getGuild().timeoutFor(Objects.requireNonNull(event.getMember()), 5, TimeUnit.MINUTES).queue();
                 Tools.muteMember(event.getMember(), event.getGuild(), "Spamming");
                 Objects.requireNonNull(event.getMember()).getUser().openPrivateChannel().queue(c -> {
                     c.sendMessageEmbeds(new EmbedBuilder().setDescription("You have been muted for **5 minutes** for spamming in a channel! You have also been given **1 warning**!").build()).queue();

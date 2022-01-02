@@ -3,25 +3,34 @@ package bot;
 import com.mongodb.client.*;
 import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.Updates;
-import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.ReadyEvent;
 import net.dv8tion.jda.api.events.ShutdownEvent;
+import net.dv8tion.jda.api.events.user.update.UserUpdateDiscriminatorEvent;
+import net.dv8tion.jda.api.events.user.update.UserUpdateNameEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.bson.Document;
 import org.jetbrains.annotations.NotNull;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 public class Database extends ListenerAdapter {
-
+    static Logger LOGGER = LoggerFactory.getLogger(Database.class);
 
     static MongoClient client;
     static MongoDatabase db;
     static MongoCollection<Document> reputationCollection;
 
-    static HashMap<Integer, ArrayList<Member>> board = new HashMap<>();
+    static HashMap<String, Integer> board = new HashMap<>();
+    static HashMap<String, String> nameCache = new HashMap<>();
 
     static String reputationClusterName = "ReputationTracker";
 
@@ -29,92 +38,120 @@ public class Database extends ListenerAdapter {
         client = MongoClients.create(Secrets.DatabaseURI);
         db = client.getDatabase("BooleanCube");
 
-        boolean exists = db.listCollectionNames().into(new ArrayList<>()).contains(reputationClusterName);
-        if (!exists) db.createCollection(reputationClusterName);
+        if (!db.listCollectionNames().into(new ArrayList<>()).contains(reputationClusterName)) {
+            db.createCollection(reputationClusterName);
+            LOGGER.info("Created {} collection", reputationClusterName);
+        }
+
         reputationCollection = db.getCollection(reputationClusterName);
-        if (!exists) reputationCollection.insertOne(new Document().append("_id", reputationClusterName));
+
+        if (reputationCollection.countDocuments(Filters.eq("_id", reputationClusterName)) == 0) {
+            reputationCollection.insertOne(new Document().append("_id", reputationClusterName));
+            LOGGER.info("Created {} in {} collection", reputationClusterName, reputationClusterName);
+        }
     }
 
     public static void addReputation(Member m) {
-        int reps = 1;
-        try (MongoCursor<Document> cursor = reputationCollection.find(Filters.eq("_id", reputationClusterName)).iterator()) {
-            Document reputationTracker = cursor.next();
-            reps = reputationTracker.getInteger(m.getId()) + 1;
-        } catch (NullPointerException ignored) {
-        }
+        String id = m.getId();
+        int reps = board.computeIfAbsent(id, a -> 0) + 1;
 
-        reputationCollection.findOneAndUpdate(Filters.eq("_id", reputationClusterName), Updates.set(m.getId(), reps));
+        new Thread(() ->
+                reputationCollection.findOneAndUpdate(Filters.eq("_id", reputationClusterName),
+                        Updates.set(id, reps))
+        ).start();
+        board.put(id, reps);
+
+        LOGGER.info("Updated reputation of {} to {}", m.getUser().getAsTag(), reps);
     }
 
-    public static int getDBPoints(Member m) {
-        try (MongoCursor<Document> cursor = reputationCollection.find(Filters.eq("_id", reputationClusterName)).iterator()) {
-            Document reputationTracker = cursor.next();
-            return reputationTracker.getInteger(m.getId());
-        } catch (NullPointerException npe) {
-            return 0;
-        }
+    public static int getReputation(Member m) {
+        return board.computeIfAbsent(m.getId(), id -> 0);
     }
 
-    public static String getReputationLB(Guild g, Member m) {
-        ArrayList<Integer> points = new ArrayList<>();
+    public static ReputationsResult getMemberReputationsWithUser(User user) {
+        ArrayList<Map.Entry<String, Integer>> entries = new ArrayList<>(board.entrySet());
+        entries.sort((a, b) -> (b.getValue()).compareTo(a.getValue()));
 
-        List<Member> members = g.getMembers();
-        for (Member s : members) {
-            if (s.getUser().isBot()) continue;
-            int sPoints = Database.getReputationPoints(s);
-            points.add(sPoints);
+        int rank = 1;
+        int lastValue = entries.get(0).getValue();
+        List<ReputationsResult.BMember> fullList = new ArrayList<>();
+
+        ReputationsResult.BMember member = new ReputationsResult.BMember(-1, user.getAsTag(), 0);
+
+        for (Map.Entry<String, Integer> e : entries) {
+            Integer value = e.getValue();
+            if (value != lastValue) rank++;
+
+            ReputationsResult.BMember m = new ReputationsResult.BMember(rank, nameCache.getOrDefault(e.getKey(), "Unknown#0000"), value);
+
+            if (e.getKey().equals(user.getId())) member = m;
+
+            fullList.add(m);
         }
-        Collections.sort(points);
-        Collections.reverse(points);
-        StringBuilder lb = new StringBuilder();
-        outer:
-        for (int i = 0; i < 10; i++) {
-            if (i > points.size()) break;
-            while (board.get(points.get(i)).size() > 0) {
-                lb.append("**#").append(i + 1).append(":** ").append(board.get(points.get(i)).remove(0).getUser().getAsTag()).append(" (").append(points.get(i)).append(" points)").append("\n");
-                if (lb.toString().split("\\r?\\n").length >= 10) break outer;
-            }
-        }
-        lb.append("\n").append("**#").append(Database.getReputationRank(g, m)).append(": ").append(m.getUser().getAsTag()).append("**");
-        return lb.toString();
+
+        return new ReputationsResult(member, IntStream.range(0, fullList.size())
+                .boxed()
+                .collect(Collectors.groupingBy(i -> i / 10))
+                .values()
+                .stream()
+                .map(indices -> indices.stream().map(fullList::get).collect(Collectors.toList()))
+                .collect(Collectors.toList()));
     }
 
-    public static int getReputationRank(Guild g, Member m) {
-        ArrayList<Integer> points = new ArrayList<>();
-        List<Member> members = g.getMembers();
-        for (Member s : members) {
-            if (s.getUser().isBot()) continue;
-            points.add(Database.getReputationPoints(s));
-        }
-        return points.indexOf(Database.getReputationPoints(m)) + 1;
-    }
+    public static int getReputationRank(Member m) {
+        ArrayList<Map.Entry<String, Integer>> entries = new ArrayList<>(board.entrySet());
+        entries.sort((a, b) -> (b.getValue()).compareTo(a.getValue()));
 
-    public static int getReputationPoints(Member m) {
-        for (int k : board.keySet()) if (board.get(k).contains(m)) return k;
-        return -1;
+        int rank = 1;
+        int lastValue = entries.get(0).getValue();
+
+        for (Map.Entry<String, Integer> e : entries) {
+            Integer value = e.getValue();
+            if (value != lastValue) rank++;
+
+            if (e.getKey().equals(m.getId())) break;
+        }
+
+        return rank;
     }
 
     @Override
     public void onReady(@NotNull ReadyEvent event) {
         //cache the database in a hashmap which is then updated frequently in a separate thread
         //this was done for optimization, because retrieving data from a cloud based database is going to take forever
-        List<Member> members = Objects.requireNonNull(event.getJDA().getGuildById("740316079523627128")).getMembers();
-        for (Member s : members) {
-            if (s.getUser().isBot()) continue;
-            int points = Database.getDBPoints(s);
-            if (board.containsKey(points)) board.get(points).add(s);
-            else {
-                ArrayList<Member> a = new ArrayList<>();
-                a.add(s);
-                board.put(points, a);
+        try (MongoCursor<Document> cursor =
+                     reputationCollection.find(Filters.eq("_id", reputationClusterName)).iterator()) {
+            Document reputationTracker = cursor.next();
+
+            for (String id : reputationTracker.keySet()) {
+                if (id.equals("_id")) continue;
+
+                board.put(id, reputationTracker.getInteger(id));
             }
         }
+        LOGGER.info("Board Cache Completed");
+
+        event.getJDA().getUsers().forEach(user -> nameCache.put(user.getId(), user.getAsTag()));
+        LOGGER.info("Name Cache Completed");
+    }
+
+    @Override
+    public void onUserUpdateName(@NotNull UserUpdateNameEvent event) {
+        updateName(event.getUser());
+    }
+
+    @Override
+    public void onUserUpdateDiscriminator(@NotNull UserUpdateDiscriminatorEvent event) {
+        updateName(event.getUser());
+    }
+
+    private void updateName(User user) {
+        if (user.isBot()) return;
+        nameCache.put(user.getId(), user.getAsTag());
     }
 
     @Override
     public void onShutdown(@NotNull ShutdownEvent event) {
-        //update the database as the bot goes offline
-
     }
 
 }

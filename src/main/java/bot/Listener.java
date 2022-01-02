@@ -20,7 +20,7 @@ public class Listener extends ListenerAdapter {
 
     @Override
     public void onMessageReceived(@Nonnull MessageReceivedEvent event) {
-        if (event.getMessage().getContentRaw().equalsIgnoreCase(Constants.PREFIX + "shutdown") && (event.getAuthor().getIdLong() == Constants.OWNERID)) {
+        if (event.getMessage().getContentRaw().equalsIgnoreCase(Constants.PREFIX + "shutdown") && (event.getAuthor().getIdLong() == Constants.OWNER_ID)) {
             event.getJDA().shutdown();
             System.exit(0);
         }

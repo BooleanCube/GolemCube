@@ -22,7 +22,7 @@ public class Reputation implements Command {
 
     @Override
     public String getHelp() {
-        return "Adds a reputation point to a user! Give reputation points to people you recieve help from as a sign of appreaciation!\n" +
+        return "Adds a reputation point to a user! Give reputation points to people you receive help from as a sign of appreaciation!\n" +
                 "Usage: `" + Constants.PREFIX + getCommand() + " [user]`";
     }
 
@@ -43,11 +43,11 @@ public class Reputation implements Command {
                 return;
             } else timeout.remove(event.getMember().getIdLong());
             Database.addReputation(m);
-            if(Database.getReputationPoints(m) == 25) event.getGuild().addRoleToMember(m, event.getGuild().getRolesByName("Helper", true).get(0)).queue();
+            if(Database.getReputation(m) == 25) event.getGuild().addRoleToMember(m, event.getGuild().getRolesByName("Helper", true).get(0)).queue();
             timeout.put(event.getAuthor().getIdLong(), System.currentTimeMillis());
             event.getChannel().sendMessageEmbeds(new EmbedBuilder()
                     .setAuthor(m.getEffectiveName(), m.getUser().getAvatarUrl(), m.getUser().getEffectiveAvatarUrl())
-                    .addField("Reputation Points:", String.valueOf(Database.getReputationPoints(m)), false)
+                    .addField("Reputation Points:", String.valueOf(Database.getReputation(m)), false)
                     .addField("Point Added By:", event.getMember().getAsMention(), true)
                     .build()
             ).queue(ms -> ms.addReaction("\uD83D\uDC4D").queue());
