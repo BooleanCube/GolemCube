@@ -15,5 +15,6 @@
 * Warn Command
 * suggestion listener
 * purge command
-- help command
-- setup database caching and usage
+* help command
+* setup database caching and usage
+- settings command
