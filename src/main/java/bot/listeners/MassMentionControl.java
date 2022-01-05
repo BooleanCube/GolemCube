@@ -24,7 +24,7 @@ public class MassMentionControl extends ListenerAdapter {
                 memberToMentions.get(event.getMember()).lastTimeMention = System.currentTimeMillis();
             } else memberToMentions.put(event.getMember(), new MENTIONS(1, System.currentTimeMillis()));
         }
-        if(memberToMentions.containsKey(event.getMember()) && (System.currentTimeMillis()-memberToMentions.get(event.getMember()).lastTimeMention <= 5000) && memberToMentions.get(event.getMember()).mentions > 10) {
+        if(memberToMentions.containsKey(event.getMember()) && (System.currentTimeMillis()-memberToMentions.get(event.getMember()).lastTimeMention <= 5000) && memberToMentions.get(event.getMember()).mentions > 9) {
             event.getChannel().sendMessageEmbeds(new EmbedBuilder().setDescription("Please do not mass mention on this server! You have been muted for `2 days`!").build()).queue();
             // TODO: timeout in alpha.4
             // event.getGuild().timeoutFor(Objects.requireNonNull(event.getMember()), 2, TimeUnit.DAYS).queue();

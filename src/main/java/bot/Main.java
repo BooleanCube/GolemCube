@@ -22,7 +22,7 @@ public class Main {
                 .setActivity(Activity.watching("over this village! | g!help"))
                 .addEventListeners(
                         new Listener(),
-                        //new SpamControl(), (removed spam control for now because its not as harmful) (set new boundaries later)
+                        new SpamControl(),
                         new MassMentionControl(),
                         new LinkControl(),
                         new Suggestions()

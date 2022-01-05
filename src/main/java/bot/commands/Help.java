@@ -35,16 +35,25 @@ public class Help implements Command {
         }
         if (args.isEmpty()) {
             EmbedBuilder e = new EmbedBuilder()
-                    .setTitle("A list of all my commands:");
-            StringBuilder desc = e.getDescriptionBuilder();
-            manager.getCommands().forEach(command -> desc.append("`").append(command.getCommand()).append("`\n"));
+                    .setTitle("GolemCube Help")
+                    .setFooter("Use `" + Constants.PREFIX + getCommand() + " [command]` to get more info about a command!");
+            StringBuilder desc = new StringBuilder();
+            manager.getCommands().forEach(command -> desc.append("`").append(command.getCommand()).append("`, "));
+            String commandList = desc.substring(0, desc.length()-2);
+            e.addField("Commands", commandList, false);
+            e.addField("Auto Moderation", "**Mass Mention Control**:\n" +
+                    "> 10 pings in 5 seconds is results in a ban!\n" +
+                    "**Message Spam Control**:\n" +
+                    "> 9 messages in 3 seconds will result in a mute and a warning!\n" +
+                    "**Link Control**:\n" +
+                    "> You can't advertise discord servers in channels other than #self-promotion \n", false);
             event.getChannel().sendMessageEmbeds(e.build()).queue();
             return;
         }
         Command command = manager.getCommand(String.join("", args));
         if (command == null) {
             event.getChannel().sendMessage("The command `" + String.join("", args) + "` does not exist!\n" +
-                    "Use `" + Constants.PREFIX + getCommand() + "` for a list of all my commands!").queue();
+                    "Use `" + Constants.PREFIX + getCommand() + "` to get more information about me!").queue();
             return;
         }
         event.getChannel().sendMessage("Command help for `" + command.getCommand() + "`\n" +
