@@ -1,5 +1,7 @@
 package bot.listeners;
 
+import bot.SettingType;
+import bot.Settings;
 import bot.Tools;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Member;
@@ -24,6 +26,8 @@ public class SpamControl extends ListenerAdapter {
 
     @Override
     public void onMessageReceived(@Nonnull MessageReceivedEvent event) {
+        if(!Settings.isEnabled(SettingType.SpamControl)) return;
+
         //5 messages in under 3 seconds then mute for 5 minutes and add a warning!
         if(blackListedChannels.contains(event.getChannel()) || blackListedMembers.contains(event.getMember())) {
             for(Role r : blackListedRoles) {
