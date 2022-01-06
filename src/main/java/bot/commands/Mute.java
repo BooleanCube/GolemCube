@@ -40,16 +40,17 @@ public class Mute implements Command {
             channel.sendMessageEmbeds(new EmbedBuilder().setDescription("The user is already in timeout!").build()).queue();
             return;
         }
-        assert member != null;
-        if (!member.hasPermission(Permission.MODERATE_MEMBERS)) {
+
+        // TODO: Change to MODERATE_MEMBERS after timeout release
+        if (!member.hasPermission(Permission.MANAGE_ROLES)) {
             channel.sendMessageEmbeds(new EmbedBuilder().setDescription("You don't have Permission to Timeout Members!").build()).queue();
             return;
         }
-        if (!event.getGuild().getSelfMember().hasPermission(Permission.MODERATE_MEMBERS)) {
+        if (!event.getGuild().getSelfMember().hasPermission(Permission.MANAGE_ROLES)) {
             event.getChannel().sendMessageEmbeds(new EmbedBuilder().setDescription("I don't have the **Timeout Members** Permission!").build()).queue();
             return;
         }
-        if (!event.getGuild().getSelfMember().canInteract(target) || target.hasPermission(Permission.MODERATE_MEMBERS)) {
+        if (!event.getGuild().getSelfMember().canInteract(target) || target.hasPermission(Permission.MANAGE_ROLES)) {
             event.getChannel().sendMessageEmbeds(new EmbedBuilder().setDescription("I can't timeout that user! The user has a higher role or is a moderator!").build()).queue();
             return;
         }
@@ -67,7 +68,7 @@ public class Mute implements Command {
             else reason = String.join(" ", args.subList(2, args.size()));
         } catch (Exception ignored) {}
         try {
-            event.getGuild().timeoutFor(target, minutes, TimeUnit.MINUTES).queue();
+            // event.getGuild().timeoutFor(target, minutes, TimeUnit.MINUTES).queue();
             Tools.muteMember(target, event.getGuild(), reason);
             event.getChannel().sendMessageEmbeds(new EmbedBuilder().setDescription("Successfully sent " + target.getAsMention() + " into timeout!").build()).queue();
         } catch (Exception e) {

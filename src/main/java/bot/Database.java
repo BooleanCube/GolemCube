@@ -49,6 +49,8 @@ public class Database extends ListenerAdapter {
             reputationCollection.insertOne(new Document().append("_id", reputationClusterName));
             LOGGER.info("Created {} in {} collection", reputationClusterName, reputationClusterName);
         }
+
+        LOGGER.info("Connected to MongoDB");
     }
 
     public static void addReputation(Member m) {
