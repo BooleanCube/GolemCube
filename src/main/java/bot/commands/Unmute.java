@@ -41,17 +41,17 @@ public class Unmute implements Command {
             return;
         }
 
-        if (!member.hasPermission(Permission.MANAGE_SERVER)) {
+        if (!member.hasPermission(Permission.MODERATE_MEMBERS)) {
             channel.sendMessage("You don't have Permission to Mute Members!").queue();
             return;
         }
 
-        if (!event.getGuild().getSelfMember().hasPermission(Permission.MANAGE_ROLES)) {
+        if (!event.getGuild().getSelfMember().hasPermission(Permission.MODERATE_MEMBERS)) {
             event.getChannel().sendMessage("I don't have the **MANAGE_ROLES** Permission!").queue();
             return;
         }
 
-        if (!event.getGuild().getSelfMember().canInteract(target) || target.hasPermission(Permission.MANAGE_SERVER)) {
+        if (!event.getGuild().getSelfMember().canInteract(target) || target.hasPermission(Permission.MODERATE_MEMBERS)) {
             event.getChannel().sendMessage("I can't mute that user! The user has a higher role or is a moderator!").queue();
             return;
         }

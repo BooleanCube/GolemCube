@@ -1,7 +1,8 @@
 package bot;
 
-import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.MessageChannel;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -39,7 +40,9 @@ public class Tools {
         return m;
     }
 
-    public static void muteMember(Member m, Guild g, String reason) {
+    public static void muteMember(Member m, Guild g, long minutes, String reason) {
+        g.timeoutFor(m, minutes, TimeUnit.MINUTES).queue();
+
         if (!memberToWarns.containsKey(m)) {
             ArrayList<Warning> warning = new ArrayList<>();
             warning.add(new Warning(reason, System.currentTimeMillis()));
@@ -47,15 +50,8 @@ public class Tools {
         } else memberToWarns.get(m).add(new Warning(reason, System.currentTimeMillis()));
     }
 
-    // TODO:
     public static void unmuteMember(Member m, Guild g) {
-        Role r = g.getRoleById(741287382757933206L);
-
-        if (m.getRoles().stream().noneMatch(it -> it.getIdLong() == r.getIdLong())) {
-            return;
-        }
-
-        g.removeRoleFromMember(m, r).queue();
+        g.removeTimeout(m).queue();
     }
 
     public static String secondsToTime(long timeseconds) {
