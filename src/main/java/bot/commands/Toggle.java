@@ -1,6 +1,10 @@
 package bot.commands;
 
-import bot.*;
+import bot.Command;
+import bot.Main;
+import bot.Tools;
+import bot.module.Module;
+import bot.module.ModuleManager;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
@@ -17,26 +21,33 @@ public class Toggle implements Command {
 
     @Override
     public String getHelp() {
-        return "Enables a setting in the automoderator discord bot!\nUsage: `" + Constants.PREFIX + getCommand() + " [feature]`";
+        return "Enables a setting in the automoderator discord bot!\nUsage: `" + Main.getPrefix() + getCommand() + " [feature]`";
     }
 
     @Override
     public void run(List<String> args, MessageReceivedEvent event) {
-        if(!Objects.requireNonNull(event.getMember()).hasPermission(Permission.MANAGE_SERVER)) return;
-        if(args.size()!=1) { Tools.wrongUsage(event.getTextChannel(), this); return; }
-        SettingType type = Settings.stringToType(args.get(0));
-        if(type == null) {
+        if (!Objects.requireNonNull(event.getMember()).hasPermission(Permission.MANAGE_SERVER)) return;
+        if (args.size() != 1) {
+            Tools.wrongUsage(event.getTextChannel(), this);
+            return;
+        }
+
+        ModuleManager moduleManager = Main.getModuleManager();
+
+        String moduleByUser = String.join(" ", args);
+        Module type = moduleManager.stringToModule(moduleByUser);
+        if (type == null) {
             event.getChannel().sendMessageEmbeds(new EmbedBuilder()
-                    .setDescription("That is not a valid setting to toggle!")
+                    .setDescription(moduleByUser + " is not a valid setting to toggle!")
                     .setColor(Color.red)
                     .build()
             ).queue();
             return;
         }
-        Settings.toggle(type);
-        String status = Settings.isEnabled(type) ? "on" : "off";
+        moduleManager.toggle(type);
+        String status = moduleManager.isEnabled(type) ? "on" : "off";
         event.getChannel().sendMessageEmbeds(new EmbedBuilder()
-                .setDescription(args.get(0) + " was toggled `" + status + "`")
+                .setDescription(type.getName() + " was toggled `" + status + "`")
                 .build()
         ).queue();
     }

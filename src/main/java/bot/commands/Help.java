@@ -1,7 +1,7 @@
 package bot.commands;
 
 import bot.Command;
-import bot.Constants;
+import bot.Main;
 import bot.Manager;
 import bot.Tools;
 import net.dv8tion.jda.api.EmbedBuilder;
@@ -24,7 +24,7 @@ public class Help implements Command {
     @Override
     public String getHelp() {
         return "Shows you a list of all the commands!\n" +
-                "Usage: `" + Constants.PREFIX + getCommand() + " <command(optional)>`";
+                "Usage: `" + Main.getPrefix() + getCommand() + " <command(optional)>`";
     }
 
     @Override
@@ -36,7 +36,7 @@ public class Help implements Command {
         if (args.isEmpty()) {
             EmbedBuilder e = new EmbedBuilder()
                     .setTitle("GolemCube Help")
-                    .setFooter("Use `" + Constants.PREFIX + getCommand() + " [command]` to get more info about a command!");
+                    .setFooter("Use `" + Main.getPrefix() + getCommand() + " [command]` to get more info about a command!");
             StringBuilder desc = new StringBuilder();
             manager.getCommands().forEach(command -> desc.append("`").append(command.getCommand()).append("`, "));
             String commandList = desc.substring(0, desc.length()-2);
@@ -47,7 +47,7 @@ public class Help implements Command {
         Command command = manager.getCommand(String.join("", args));
         if (command == null) {
             event.getChannel().sendMessage("The command `" + String.join("", args) + "` does not exist!\n" +
-                    "Use `" + Constants.PREFIX + getCommand() + "` to get more information about me!").queue();
+                    "Use `" + Main.getPrefix() + getCommand() + "` to get more information about me!").queue();
             return;
         }
         event.getChannel().sendMessage("Command help for `" + command.getCommand() + "`\n" +

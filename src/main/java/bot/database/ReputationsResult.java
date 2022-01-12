@@ -1,4 +1,4 @@
-package bot;
+package bot.database;
 
 import java.util.List;
 

@@ -1,4 +1,4 @@
-package bot;
+package bot.database;
 
 import com.mongodb.client.*;
 import com.mongodb.client.model.Filters;
@@ -34,8 +34,8 @@ public class Database extends ListenerAdapter {
 
     static String reputationClusterName = "ReputationTracker";
 
-    public static void setupDatabase() {
-        client = MongoClients.create(Secrets.DatabaseURI);
+    public static void setupDatabase(String DatabaseURI) {
+        client = MongoClients.create(DatabaseURI);
         db = client.getDatabase("BooleanCube");
 
         if (!db.listCollectionNames().into(new ArrayList<>()).contains(reputationClusterName)) {

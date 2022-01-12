@@ -35,6 +35,13 @@
             <version>4.4.0</version>
         </dependency>
 
+        <!-- https://github.com/A248/DazzleConf -->
+        <dependency>
+            <groupId>space.arim.dazzleconf</groupId>
+            <artifactId>dazzleconf-ext-snakeyaml</artifactId>
+            <version>1.3.0-M1</version>
+        </dependency>
+
         <!-- https://github.com/qos-ch/logback -->
         <dependency>
             <groupId>ch.qos.logback</groupId>
