@@ -11,7 +11,7 @@ public interface Config {
 
     @Order(1)
     @ConfKey("token")
-    @ConfDefault.DefaultString("TmV2ZXIgZ29ubmEgZ2l2ZSB5b3U.gdXAKTmV2ZXIgZ29ubmEgbGV0IHlvdSBkb3du")
+    @ConfDefault.DefaultString("never gonna give you up")
     @ConfComments("The Token Of the bot. Default String is encoded to Base64.")
     String token();
 
