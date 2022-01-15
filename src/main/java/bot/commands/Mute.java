@@ -1,7 +1,7 @@
 package bot.commands;
 
 import bot.Command;
-import bot.Constants;
+import bot.Main;
 import bot.Tools;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
@@ -22,7 +22,7 @@ public class Mute implements Command {
     @Override
     public String getHelp() {
         return "Mutes a Member!\n" +
-                "Usage: `" + Constants.PREFIX + getCommand() + " <user> <time|seconds> <reason>`";
+                "Usage: `" + Main.getPrefix() + getCommand() + " <user> <time|seconds> <reason>`";
     }
 
     @Override

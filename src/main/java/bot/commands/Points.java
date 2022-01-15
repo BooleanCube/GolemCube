@@ -1,8 +1,8 @@
 package bot.commands;
 
 import bot.Command;
-import bot.Constants;
-import bot.Database;
+import bot.Main;
+import bot.database.Database;
 import bot.Tools;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Member;
@@ -19,7 +19,7 @@ public class Points implements Command {
     @Override
     public String getHelp() {
         return "Shows the user their reputation in the server!\n" +
-                "Usage: `" + Constants.PREFIX + getCommand() + " [user(optional)]`";
+                "Usage: `" + Main.getPrefix() + getCommand() + " [user(optional)]`";
     }
 
     @Override

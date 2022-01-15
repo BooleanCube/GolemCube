@@ -1,7 +1,7 @@
 package bot.listeners;
 
-import bot.Database;
-import bot.ReputationsResult;
+import bot.database.Database;
+import bot.database.ReputationsResult;
 import bot.commands.ReputationLeaderboard;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Message;

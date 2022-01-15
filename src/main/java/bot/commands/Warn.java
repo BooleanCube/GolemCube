@@ -1,7 +1,7 @@
 package bot.commands;
 
 import bot.Command;
-import bot.Constants;
+import bot.Main;
 import bot.Tools;
 import bot.Warning;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
@@ -18,7 +18,7 @@ public class Warn implements Command {
     @Override
     public String getHelp() {
         return "Warns a member!\n" +
-                "Usage: `" + Constants.PREFIX + getCommand() + " <member> <reason>`";
+                "Usage: `" + Main.getPrefix() + getCommand() + " <member> <reason>`";
     }
 
     @Override

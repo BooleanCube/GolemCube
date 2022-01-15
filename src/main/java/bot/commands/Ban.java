@@ -1,7 +1,7 @@
 package bot.commands;
 
 import bot.Command;
-import bot.Constants;
+import bot.Main;
 import bot.Tools;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
@@ -19,7 +19,7 @@ public class Ban implements Command {
     @Override
     public String getHelp() {
         return "Bans a User from the Server!\n" +
-                "Usage: `" + Constants.PREFIX + getCommand() + " <user> <time|days> <reason>`";
+                "Usage: `" + Main.getPrefix() + getCommand() + " <user> <time|days> <reason>`";
     }
 
     @Override

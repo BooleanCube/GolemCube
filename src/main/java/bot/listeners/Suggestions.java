@@ -1,8 +1,7 @@
 package bot.listeners;
 
-import bot.Constants;
-import bot.SettingType;
-import bot.Settings;
+import bot.Main;
+import bot.module.Module;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.TextChannel;
@@ -15,12 +14,19 @@ import java.util.Objects;
 
 public class Suggestions extends ListenerAdapter {
 
+    private final String channelID;
+
+    public Suggestions(String channelID) {
+        this.channelID = channelID;
+    }
+
     @Override
     public void onMessageReceived(@NotNull MessageReceivedEvent event) {
-        if(!Settings.isEnabled(SettingType.SuggestionListener)) return;
-        if (event.getAuthor().isBot() || event.getMessage().getContentRaw().toLowerCase().startsWith(Constants.PREFIX))
+        if (!Main.getModuleManager().isEnabled(Module.SUGGESTION_LISTENER)) return;
+        if (event.getAuthor().isBot() || event.getMessage().getContentRaw().toLowerCase().startsWith(Main.getPrefix()))
             return;
-        if (event.getChannel().getIdLong() == 901832454904614953L) {
+
+        if (event.getChannel().getId().equals(channelID)) {
             event.getMessage().delete().queue();
             event.getChannel().sendMessageEmbeds(new EmbedBuilder()
                     .setAuthor(Objects.requireNonNull(event.getMember()).getEffectiveName(), event.getAuthor().getAvatarUrl(), event.getAuthor().getEffectiveAvatarUrl())

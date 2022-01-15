@@ -1,7 +1,7 @@
 package bot.commands;
 
 import bot.Command;
-import bot.Constants;
+import bot.Main;
 import bot.Tools;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
@@ -18,7 +18,7 @@ public class Ping implements Command {
     @Override
     public String getHelp() {
         return "Gives you the gateway and rest ping of the bot.\n" +
-                "Usage: `" + Constants.PREFIX + getCommand() + "`";
+                "Usage: `" + Main.getPrefix() + getCommand() + "`";
     }
 
     @Override

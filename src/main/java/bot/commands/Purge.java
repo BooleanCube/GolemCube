@@ -1,7 +1,7 @@
 package bot.commands;
 
 import bot.Command;
-import bot.Constants;
+import bot.Main;
 import bot.Tools;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Message;
@@ -20,7 +20,7 @@ public class Purge implements Command {
     @Override
     public String getHelp() {
         return "Purges/Deletes the number of messages given!\n" +
-                "Usage: `" + Constants.PREFIX + getCommand() + " [num]`";
+                "Usage: `" + Main.getPrefix() + getCommand() + " [num]`";
     }
 
     @Override

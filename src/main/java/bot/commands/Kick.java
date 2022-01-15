@@ -1,13 +1,12 @@
 package bot.commands;
 
 import bot.Command;
-import bot.Constants;
+import bot.Main;
 import bot.Tools;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageChannel;
-import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 import java.util.List;
@@ -22,7 +21,7 @@ public class Kick implements Command {
     @Override
     public String getHelp() {
         return "Kicks a User from the Server!\n" +
-                "Usage: `" + Constants.PREFIX + getCommand() + " <user> <reason>`";
+                "Usage: `" + Main.getPrefix() + getCommand() + " <user> <reason>`";
     }
 
     @Override

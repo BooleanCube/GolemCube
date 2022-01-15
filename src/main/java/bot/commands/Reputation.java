@@ -1,8 +1,8 @@
 package bot.commands;
 
 import bot.Command;
-import bot.Constants;
-import bot.Database;
+import bot.Main;
+import bot.database.Database;
 import bot.Tools;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Member;
@@ -23,7 +23,7 @@ public class Reputation implements Command {
     @Override
     public String getHelp() {
         return "Adds a reputation point to a user! Give reputation points to people you receive help from as a sign of appreaciation!\n" +
-                "Usage: `" + Constants.PREFIX + getCommand() + " [user]`";
+                "Usage: `" + Main.getPrefix() + getCommand() + " [user]`";
     }
 
     @Override
@@ -39,7 +39,7 @@ public class Reputation implements Command {
                 return;
             }
             if(timeout.containsKey(event.getMember().getIdLong()) && timeout.get(event.getMember().getIdLong()) + 3600000 > System.currentTimeMillis()) {
-                event.getChannel().sendMessageEmbeds(new EmbedBuilder().setDescription("You can only use the `" + Constants.PREFIX + "rep` command once an hour!\nWait for " + Tools.secondsToTime((timeout.get(event.getMember().getIdLong()) + 3600000 - System.currentTimeMillis())/1000)).build()).queue();
+                event.getChannel().sendMessageEmbeds(new EmbedBuilder().setDescription("You can only use the `" + Main.getPrefix() + "rep` command once an hour!\nWait for " + Tools.secondsToTime((timeout.get(event.getMember().getIdLong()) + 3600000 - System.currentTimeMillis())/1000)).build()).queue();
                 return;
             } else timeout.remove(event.getMember().getIdLong());
             Database.addReputation(m);

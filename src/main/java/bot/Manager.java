@@ -49,11 +49,10 @@ public class Manager {
     }
 
     void run(MessageReceivedEvent event) {
-        final String msg = event.getMessage().getContentRaw();
-        if (!msg.startsWith(Constants.PREFIX)) {
-            return;
-        }
-        final String[] split = msg.replaceFirst("(?i)" + Pattern.quote(Constants.PREFIX), "").split("\\s+");
+        String msg = event.getMessage().getContentRaw();
+        if (!msg.startsWith(Main.getPrefix())) return;
+
+        final String[] split = msg.replaceFirst("(?i)" + Pattern.quote(Main.getPrefix()), "").split("\\s+");
         final String command = split[0].toLowerCase();
         if (commands.containsKey(command)) {
             final List<String> args = Arrays.asList(split).subList(1, split.length);

@@ -1,8 +1,9 @@
-package bot.listeners;
+package bot.listeners.moderation;
 
-import bot.SettingType;
-import bot.Settings;
+import bot.Main;
 import bot.Tools;
+import bot.config.Config;
+import bot.module.Module;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.ReadyEvent;
@@ -10,20 +11,26 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
 import javax.annotation.Nonnull;
-import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 @SuppressWarnings("ConstantConditions")
 public class SpamControl extends ListenerAdapter {
-    static ArrayList<String> blackListedChannels = new ArrayList<>();
-    static ArrayList<String> blackListedMembers = new ArrayList<>();
-    static ArrayList<String> blackListedRoles = new ArrayList<>();
+    static List<String> blackListedChannels;
+    static List<String> blackListedMembers;
+    static List<String> blackListedRoles;
 
     HashMap<Member, MessageHistory> messageTracking = new HashMap<>();
 
+    public SpamControl(Config config) {
+        blackListedChannels = config.channelSpamBlacklist();
+        blackListedMembers = config.memberSpamBlacklist();
+        blackListedRoles = config.roleSpamBlacklist();
+    }
+
     @Override
     public void onMessageReceived(@Nonnull MessageReceivedEvent event) {
-        if (!Settings.isEnabled(SettingType.SpamControl)) return;
+        if (!Main.getModuleManager().isEnabled(Module.SPAM_CONTROL)) return;
 
         Member member = event.getMember();
 
@@ -63,19 +70,5 @@ public class SpamControl extends ListenerAdapter {
     @Override
     public void onReady(@Nonnull ReadyEvent event) {
         //Add all of your blacklists here
-        blackListedChannels.add("768793442632990721");
-        blackListedChannels.add("741785877944074251");
-        blackListedMembers.add(event.getJDA().getGuilds().get(0).getOwner().getId());
-        blackListedRoles.add("773337238952083477");
     }
-}
-
-class MessageHistory {
-    public MessageHistory(int msgNum, long lastTimeSent) {
-        this.msgNum = msgNum;
-        this.lastTimeSent = lastTimeSent;
-    }
-
-    int msgNum;
-    long lastTimeSent;
 }

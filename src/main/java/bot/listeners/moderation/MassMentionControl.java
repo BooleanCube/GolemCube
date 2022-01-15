@@ -1,8 +1,8 @@
-package bot.listeners;
+package bot.listeners.moderation;
 
-import bot.SettingType;
-import bot.Settings;
+import bot.Main;
 import bot.Tools;
+import bot.module.Module;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
@@ -18,7 +18,7 @@ public class MassMentionControl extends ListenerAdapter {
 
     @Override
     public void onMessageReceived(@Nonnull MessageReceivedEvent event) {
-        if (!Settings.isEnabled(SettingType.MassMentionControl)) return;
+        if (!Main.getModuleManager().isEnabled(Module.MASS_MENTION_CONTROL)) return;
         if (event.getMessage().getMentionedMembers().size() >= 1) {
             if (memberToMentions.containsKey(event.getMember())) {
                 memberToMentions.get(event.getMember()).mentions += event.getMessage().getMentionedMembers().size();

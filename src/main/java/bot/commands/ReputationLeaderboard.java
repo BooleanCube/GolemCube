@@ -1,6 +1,8 @@
 package bot.commands;
 
 import bot.*;
+import bot.database.Database;
+import bot.database.ReputationsResult;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
@@ -17,7 +19,7 @@ public class ReputationLeaderboard implements Command {
     @Override
     public String getHelp() {
         return "Shows a list of 10 server members with the highest reputation\n" +
-                "Usage: `" + Constants.PREFIX + getCommand() + "` <page-number(optional)>";
+                "Usage: `" + Main.getPrefix() + getCommand() + "` <page-number(optional)>";
     }
 
     @Override
