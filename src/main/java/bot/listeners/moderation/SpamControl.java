@@ -50,7 +50,6 @@ public class SpamControl extends ListenerAdapter {
             int msgNum = messageTracking.get(member).msgNum++;
             long lastTimeSent = messageTracking.get(member).lastTimeSent;
             if (msgNum == scmessages && System.currentTimeMillis() - lastTimeSent <= scseconds * 1000) {
-                Tools.muteMember(member, event.getGuild(), 5, "Spamming");
                 member.getUser().openPrivateChannel().queue(c -> {
                     c.sendMessageEmbeds(new EmbedBuilder().setDescription("You have been muted for **5 minutes** for spamming in a channel! You have also been given **1 warning**!").build()).queue();
                 });
@@ -59,6 +58,7 @@ public class SpamControl extends ListenerAdapter {
                     event.getChannel().sendMessage("Kicked " + member.getAsMention() + " from the server because they exceeded `3 warnings`!").queue();
                     member.kick("Exceeded 3 warnings!").queue();
                 }
+                Tools.muteMember(member, event.getGuild(), 5, "Spamming");
             } else if (System.currentTimeMillis() - lastTimeSent > scseconds * 1000) {
                 messageTracking.get(member).msgNum = 1;
                 messageTracking.get(member).lastTimeSent = System.currentTimeMillis();
