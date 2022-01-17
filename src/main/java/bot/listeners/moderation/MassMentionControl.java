@@ -21,9 +21,7 @@ public class MassMentionControl extends ListenerAdapter {
     public void onMessageReceived(@Nonnull MessageReceivedEvent event) {
         if (!Main.getModuleManager().isEnabled(Module.MASS_MENTION_CONTROL)) return;
         if (event.getAuthor().isBot()) return;
-        if (event.getChannelType() != ChannelType.TEXT || event.getChannelType() != ChannelType.GUILD_PUBLIC_THREAD)
-            return;
-
+        if(event.getChannelType() == ChannelType.PRIVATE) return;
         if (event.getMessage().getMentionedMembers().size() >= 1) {
             if (memberToMentions.containsKey(event.getMember())) {
                 memberToMentions.get(event.getMember()).mentions += event.getMessage().getMentionedMembers().size();
@@ -36,9 +34,9 @@ public class MassMentionControl extends ListenerAdapter {
         }
     }
 
-    static class MENTIONS {
-        public int mentions;
-        public long lastTimeMention;
+    class MENTIONS {
+        public int mentions = 0;
+        public long lastTimeMention = 0;
 
         public MENTIONS(int m, long lt) {
             mentions = m;

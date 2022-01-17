@@ -57,16 +57,14 @@ public class Mute implements Command {
             return;
         }
         int minutes = 0;
-        String reason = "";
+        String reason = "unkown";
         try {
             minutes = Integer.parseInt(args.get(1));
-        } catch (Exception ignored) {
-        }
+        } catch (Exception ignored) {}
         try {
             if (minutes == 0) reason = String.join(" ", args.subList(1, args.size()));
             else reason = String.join(" ", args.subList(2, args.size()));
-        } catch (Exception ignored) {
-        }
+        } catch (Exception ignored) {}
         try {
             Tools.muteMember(target, event.getGuild(), minutes, reason);
             event.getChannel().sendMessageEmbeds(new EmbedBuilder().setDescription("Successfully sent " + target.getAsMention() + " into timeout!").build()).queue();

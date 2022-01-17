@@ -4,6 +4,7 @@ import bot.config.Config;
 import bot.config.ConfigManager;
 import bot.config.ModuleConfig;
 import bot.database.Database;
+import bot.listeners.ReputationLeaderboardButtons;
 import bot.listeners.Suggestions;
 import bot.listeners.moderation.LinkControl;
 import bot.listeners.moderation.MassMentionControl;
@@ -55,6 +56,7 @@ public class Main {
                         new SpamControl(config),
                         new MassMentionControl(),
                         new LinkControl(),
+                        new ReputationLeaderboardButtons(),
                         new Suggestions(config.suggestionChannelID())
                 )
                 .build().awaitReady();

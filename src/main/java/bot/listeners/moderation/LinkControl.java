@@ -14,8 +14,7 @@ public class LinkControl extends ListenerAdapter {
     public void onMessageReceived(@NotNull MessageReceivedEvent event) {
         if (!Main.getModuleManager().isEnabled(Module.LINK_CONTROL)) return;
         if (event.getAuthor().isBot()) return;
-        if (event.getChannelType() != ChannelType.TEXT || event.getChannelType() != ChannelType.GUILD_PUBLIC_THREAD)
-            return;
+        if(event.getChannelType() == ChannelType.PRIVATE) return;
         if (!event.getChannel().getName().contains("promotion")) {
             String msg = event.getMessage().getContentRaw();
             if (msg.contains("discord.gg/")) {

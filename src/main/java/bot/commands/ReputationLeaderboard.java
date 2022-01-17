@@ -4,6 +4,7 @@ import bot.*;
 import bot.database.Database;
 import bot.database.ReputationsResult;
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.entities.Emoji;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.interactions.components.Button;
@@ -39,9 +40,9 @@ public class ReputationLeaderboard implements Command {
             event.getChannel().sendMessageEmbeds(embed.build())
                     .setActionRow(
                             Button.primary(userId + ":previous", "Previous"),
-                            Button.success(userId + ":done:" + page, "Done"),
-                            Button.primary(userId + ":next", "Next"),
-                            Button.danger(userId + ":delete", "Delete")
+                            Button.success(userId + ":done" + page, Emoji.fromUnicode("✅")),
+                            Button.danger(userId + ":delete", Emoji.fromUnicode("\uD83D\uDDD1")),
+                            Button.primary(userId + ":next", "Next")
                     ).queue();
         } catch (NumberFormatException e) {
             Tools.wrongUsage(event.getChannel(), this);

@@ -38,10 +38,9 @@ public class SpamControl extends ListenerAdapter {
     public void onMessageReceived(@Nonnull MessageReceivedEvent event) {
         if (!Main.getModuleManager().isEnabled(Module.SPAM_CONTROL)) return;
         if (event.getAuthor().isBot()) return;
-        if (event.getChannelType() != ChannelType.TEXT || event.getChannelType() != ChannelType.GUILD_PUBLIC_THREAD)
-            return;
-
+        if(event.getChannelType() == ChannelType.PRIVATE) return;
         Member member = event.getMember();
+
         if (blackListedChannels.contains(event.getChannel().getId())
                 || blackListedMembers.contains(member.getId())
                 || member.getRoles().stream().anyMatch(it -> blackListedRoles.contains(it.getId()))) {
@@ -65,7 +64,7 @@ public class SpamControl extends ListenerAdapter {
                             e -> event.getChannel().sendMessageEmbeds(embed).queue()
                     );
                 });
-                event.getChannel().sendMessage("Please do not spam! You have been muted for `5 minutes`!").queue();
+                event.getChannel().sendMessage("Please do not spam! You have been muted for `5 minutes` and given `1 warning`!").queue();
                 if (Tools.memberToWarns.computeIfAbsent(member, (m) -> new ArrayList<>()).size() >= 4) {
                     event.getChannel().sendMessage("Kicked " + member.getAsMention() + " from the server because they exceeded `3 warnings`!").queue();
                     member.kick("Exceeded 3 warnings!").queue();

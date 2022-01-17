@@ -38,8 +38,8 @@ public class Reputation implements Command {
                 event.getChannel().sendMessageEmbeds(new EmbedBuilder().setDescription("You can't give yourself a reputation point!").build()).queue();
                 return;
             }
-            if(timeout.containsKey(event.getMember().getIdLong()) && timeout.get(event.getMember().getIdLong()) + 3600000 > System.currentTimeMillis()) {
-                event.getChannel().sendMessageEmbeds(new EmbedBuilder().setDescription("You can only use the `" + Main.getPrefix() + "rep` command once an hour!\nWait for " + Tools.secondsToTime((timeout.get(event.getMember().getIdLong()) + 3600000 - System.currentTimeMillis())/1000)).build()).queue();
+            if(timeout.containsKey(event.getMember().getIdLong()) && timeout.get(event.getMember().getIdLong()) + 7200000 > System.currentTimeMillis()) {
+                event.getChannel().sendMessageEmbeds(new EmbedBuilder().setDescription("You can only use the `" + Main.getPrefix() + "rep` command once in 2 hours!\nWait for " + Tools.secondsToTime((timeout.get(event.getMember().getIdLong()) + 7200000 - System.currentTimeMillis())/1000)).build()).queue();
                 return;
             } else timeout.remove(event.getMember().getIdLong());
             Database.addReputation(m);

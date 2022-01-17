@@ -5,6 +5,7 @@ import bot.database.Database;
 import bot.database.ReputationsResult;
 import bot.commands.ReputationLeaderboard;
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.entities.Emoji;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.interaction.ButtonClickEvent;
@@ -46,14 +47,14 @@ public class ReputationLeaderboardButtons extends ListenerAdapter {
                 event.deferEdit().setActionRow(disabledButton).queue();
             }
             break;
-            case "next": {
-                event.deferEdit().queue();
-                editMessage(message, true, user, Integer.parseInt(page));
-            }
-            break;
             case "previous": {
                 event.deferEdit().queue();
                 editMessage(message, false, user, Integer.parseInt(page));
+            }
+            break;
+            case "next": {
+                event.deferEdit().queue();
+                editMessage(message, true, user, Integer.parseInt(page));
             }
             break;
         }
@@ -75,9 +76,9 @@ public class ReputationLeaderboardButtons extends ListenerAdapter {
         msg.editMessageEmbeds(embed.build()).queue();
         msg.editMessageComponents(ActionRow.of(
                 Button.primary(userId + ":previous", "Previous"),
-                Button.success(userId + ":done:" + page, "Done"),
-                Button.primary(userId + ":next", "Next"),
-                Button.danger(userId + ":delete", "Delete")
+                Button.success(userId + ":done" + page, Emoji.fromUnicode("✅")),
+                Button.danger(userId + ":delete", Emoji.fromUnicode("\uD83D\uDDD1")),
+                Button.primary(userId + ":next", "Next")
         )).queue();
     }
 
