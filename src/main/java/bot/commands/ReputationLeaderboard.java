@@ -1,6 +1,8 @@
 package bot.commands;
 
-import bot.*;
+import bot.Command;
+import bot.Main;
+import bot.Tools;
 import bot.database.Database;
 import bot.database.ReputationsResult;
 import net.dv8tion.jda.api.EmbedBuilder;
@@ -29,7 +31,6 @@ public class ReputationLeaderboard implements Command {
         String userId = author.getId();
 
         try {
-
             int page = args.isEmpty() ? 1 : Integer.parseInt(args.get(0));
             ReputationsResult reputations = Database.getMemberReputationsWithUser(author);
             ReputationsResult.BMember member = reputations.getMember();
@@ -40,8 +41,8 @@ public class ReputationLeaderboard implements Command {
             event.getChannel().sendMessageEmbeds(embed.build())
                     .setActionRow(
                             Button.primary(userId + ":previous", "Previous"),
-                            Button.success(userId + ":done" + page, Emoji.fromUnicode("✅")),
-                            Button.danger(userId + ":delete", Emoji.fromUnicode("\uD83D\uDDD1")),
+                            Button.success(userId + ":done:" + page, Emoji.fromUnicode("✅")),
+                            Button.danger(userId + ":delete:" + event.getMessageId(), Emoji.fromUnicode("\uD83D\uDDD1")),
                             Button.primary(userId + ":next", "Next")
                     ).queue();
         } catch (NumberFormatException e) {

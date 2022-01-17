@@ -1,9 +1,9 @@
 package bot.listeners;
 
 import bot.Main;
+import bot.commands.ReputationLeaderboard;
 import bot.database.Database;
 import bot.database.ReputationsResult;
-import bot.commands.ReputationLeaderboard;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Emoji;
 import net.dv8tion.jda.api.entities.Message;
@@ -15,31 +15,36 @@ import net.dv8tion.jda.api.interactions.components.Button;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
-import java.util.Objects;
 
+@SuppressWarnings({"ConstantConditions", "OptionalGetWithoutIsPresent"})
 public class ReputationLeaderboardButtons extends ListenerAdapter {
     @Override
     public void onButtonClick(@NotNull ButtonClickEvent event) {
-        final String[] id = event.getComponentId().split(":");
-        String userId = id[0];
-        String buttonId = id[1];
+        if (!event.isFromGuild()) return;
 
-        if (!Objects.requireNonNull(event.getMember()).getId().equals(userId)) {
+        String[] id = event.getComponentId().split(":");
+
+        if (!event.getMember().getId().equals(id[0])) {
             event.reply("You are not the one who requested the leaderboard. Use `" + Main.getPrefix() + "leaderboard` to create a new one.")
                     .setEphemeral(true).queue();
         }
 
-        final Message message = event.getMessage();
+        Message message = event.getMessage();
         String page = message.getButtons().stream()
-                .filter(it -> it.getLabel().equals("Done"))
+                .filter(it -> it.getId().contains("done"))
                 .findAny().get().getId().split(":")[2];
 
         User user = event.getMember().getUser();
 
-        switch (buttonId) {
+        switch (id[1]) {
             case "delete": {
-                event.deferEdit().queue();
+                String msgID = message.getButtons().stream()
+                        .filter(it -> it.getId().contains("delete"))
+                        .findAny().get().getId().split(":")[2];
+
+                event.getChannel().retrieveMessageById(msgID).queue(msg -> msg.delete().queue());
                 message.delete().queue();
+                event.deferEdit().queue();
             }
             break;
             case "done": {
@@ -61,11 +66,15 @@ public class ReputationLeaderboardButtons extends ListenerAdapter {
     }
 
     private void editMessage(Message msg, boolean next, User user, int page) {
-        page = next ? page + 1 : page - 1;
-
         ReputationsResult reputations = Database.getMemberReputationsWithUser(user);
         List<List<ReputationsResult.BMember>> guildsList = reputations.getMemberReputations();
+
         if (page == 0 || page == guildsList.size()) return;
+
+        System.out.println("Current Page: " + page);
+        page = next ? page + 1 : page - 1;
+
+        System.out.println(page);
 
         ReputationsResult.BMember member = reputations.getMember();
         EmbedBuilder embed = new EmbedBuilder().setDescription("```" + ReputationLeaderboard.getTable(guildsList.get(page - 1)) + "```")
@@ -76,8 +85,8 @@ public class ReputationLeaderboardButtons extends ListenerAdapter {
         msg.editMessageEmbeds(embed.build()).queue();
         msg.editMessageComponents(ActionRow.of(
                 Button.primary(userId + ":previous", "Previous"),
-                Button.success(userId + ":done" + page, Emoji.fromUnicode("✅")),
-                Button.danger(userId + ":delete", Emoji.fromUnicode("\uD83D\uDDD1")),
+                Button.success(userId + ":done:" + page, Emoji.fromUnicode("✅")),
+                Button.danger(userId + ":delete:" + msg.getId(), Emoji.fromUnicode("\uD83D\uDDD1")),
                 Button.primary(userId + ":next", "Next")
         )).queue();
     }
