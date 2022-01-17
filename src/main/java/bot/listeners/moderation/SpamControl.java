@@ -58,7 +58,7 @@ public class SpamControl extends ListenerAdapter {
                     c.sendMessageEmbeds(new EmbedBuilder().setDescription("You have been muted for **5 minutes** for spamming in a channel! You have also been given **1 warning**!").build()).queue();
                 });
                 event.getChannel().sendMessage("Please do not spam! You have been muted for `5 minutes`!").queue();
-                if (Tools.memberToWarns.get(member).size() >= 4) {
+                if (Tools.memberToWarns.computeIfAbsent(member, (m) -> new ArrayList<>()).size() >= 4) {
                     event.getChannel().sendMessage("Kicked " + member.getAsMention() + " from the server because they exceeded `3 warnings`!").queue();
                     member.kick("Exceeded 3 warnings!").queue();
                 }
