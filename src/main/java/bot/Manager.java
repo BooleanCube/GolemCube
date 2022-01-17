@@ -28,6 +28,7 @@ public class Manager {
         addCommand(new Points());
         addCommand(new ReputationLeaderboard());
         addCommand(new Toggle());
+        addCommand(new Settings());
     }
 
     private void addCommand(Command c) {

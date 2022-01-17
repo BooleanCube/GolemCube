@@ -47,8 +47,8 @@ public class SpamControl extends ListenerAdapter {
         }
 
         // 9 messages in under 3 seconds then mute for 5 minutes and add a warning!
-        int scmessages = 9;
-        int scseconds = 3;
+        int scmessages = 5;
+        int scseconds = 2;
 
         if (!messageTracking.containsKey(member)) {
             messageTracking.put(member, new MessageHistory(1, System.currentTimeMillis()));

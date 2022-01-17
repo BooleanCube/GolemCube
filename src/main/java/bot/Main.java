@@ -48,7 +48,7 @@ public class Main {
         JDABuilder.createDefault(config.token())
                 .setChunkingFilter(ChunkingFilter.ALL)
                 .setMemberCachePolicy(MemberCachePolicy.ALL)
-                .enableIntents(GatewayIntent.GUILD_MEMBERS, GatewayIntent.GUILD_MESSAGES)
+                .enableIntents(GatewayIntent.GUILD_MEMBERS, GatewayIntent.DIRECT_MESSAGES)
                 .setActivity(Activity.watching("over this village! | " + Main.getPrefix() + "help"))
                 .addEventListeners(
                         new Database(),

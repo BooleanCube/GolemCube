@@ -1,8 +1,6 @@
 package bot.commands;
 
-import bot.Command;
-import bot.Main;
-import bot.Tools;
+import bot.*;
 import bot.database.Database;
 import bot.database.ReputationsResult;
 import net.dv8tion.jda.api.EmbedBuilder;
@@ -31,6 +29,7 @@ public class ReputationLeaderboard implements Command {
         String userId = author.getId();
 
         try {
+
             int page = args.isEmpty() ? 1 : Integer.parseInt(args.get(0));
             ReputationsResult reputations = Database.getMemberReputationsWithUser(author);
             ReputationsResult.BMember member = reputations.getMember();

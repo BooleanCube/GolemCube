@@ -4,6 +4,8 @@ import bot.Main;
 import bot.Tools;
 import bot.module.Module;
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.entities.ChannelType;
+import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
@@ -13,6 +15,7 @@ import java.util.concurrent.TimeUnit;
 
 @SuppressWarnings("ConstantConditions")
 public class MassMentionControl extends ListenerAdapter {
+
     public HashMap<String, MENTIONS> memberToMentions = new HashMap<>();
 
     @Override
@@ -31,12 +34,13 @@ public class MassMentionControl extends ListenerAdapter {
                 memberToMentions.get(event.getMember().getId()).mentions > 9) {
             event.getChannel().sendMessageEmbeds(new EmbedBuilder().setDescription("Please do not mass mention on this server! You have been muted for `2 days`!").build()).queue();
             Tools.muteMember(event.getMember(), event.getGuild(), TimeUnit.DAYS.toMinutes(2), "Mass Mention");
+            memberToMentions.remove(event.getMember().getId());
         }
     }
 
     static class MENTIONS {
-        public int mentions;
-        public long lastTimeMention;
+        public int mentions = 0;
+        public long lastTimeMention = 0;
 
         public MENTIONS(int m, long lt) {
             mentions = m;
