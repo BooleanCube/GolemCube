@@ -2,7 +2,6 @@ package bot.listeners.moderation;
 
 import bot.Main;
 import bot.module.Module;
-import net.dv8tion.jda.api.entities.ChannelType;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.jetbrains.annotations.NotNull;
@@ -14,7 +13,7 @@ public class LinkControl extends ListenerAdapter {
     public void onMessageReceived(@NotNull MessageReceivedEvent event) {
         if (!Main.getModuleManager().isEnabled(Module.LINK_CONTROL)) return;
         if (event.getAuthor().isBot()) return;
-        if(event.getChannelType() == ChannelType.PRIVATE) return;
+        if (!event.isFromGuild()) return;
         if (!event.getChannel().getName().contains("promotion")) {
             String msg = event.getMessage().getContentRaw();
             if (msg.contains("discord.gg/")) {

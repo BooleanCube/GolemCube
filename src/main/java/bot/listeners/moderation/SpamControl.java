@@ -5,7 +5,6 @@ import bot.Tools;
 import bot.config.Config;
 import bot.module.Module;
 import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.entities.ChannelType;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.events.ReadyEvent;
@@ -38,7 +37,7 @@ public class SpamControl extends ListenerAdapter {
     public void onMessageReceived(@Nonnull MessageReceivedEvent event) {
         if (!Main.getModuleManager().isEnabled(Module.SPAM_CONTROL)) return;
         if (event.getAuthor().isBot()) return;
-        if(event.getChannelType() == ChannelType.PRIVATE) return;
+        if(!event.isFromGuild()) return;
         Member member = event.getMember();
 
         if (blackListedChannels.contains(event.getChannel().getId())
