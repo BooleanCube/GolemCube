@@ -48,8 +48,9 @@ public class Main {
                 .setChunkingFilter(ChunkingFilter.ALL)
                 .setMemberCachePolicy(MemberCachePolicy.ALL)
                 .enableIntents(GatewayIntent.GUILD_MEMBERS)
-                .setActivity(Activity.watching("over this village! | g!help"))
+                .setActivity(Activity.watching("over this village! | " + Main.getPrefix() + "help"))
                 .addEventListeners(
+                        new Database(),
                         new Listener(),
                         new SpamControl(config),
                         new MassMentionControl(),

@@ -11,6 +11,7 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
 import javax.annotation.Nonnull;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -26,6 +27,9 @@ public class SpamControl extends ListenerAdapter {
         blackListedChannels = config.channelSpamBlacklist();
         blackListedMembers = config.memberSpamBlacklist();
         blackListedRoles = config.roleSpamBlacklist();
+//        if(blackListedChannels == null) blackListedChannels = new ArrayList<>();
+//        if(blackListedMembers == null) blackListedMembers = new ArrayList<>();
+//        if(blackListedRoles == null) blackListedRoles = new ArrayList<>();
     }
 
     @Override

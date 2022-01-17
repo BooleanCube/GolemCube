@@ -126,8 +126,7 @@ public class Database extends ListenerAdapter {
             Document reputationTracker = cursor.next();
 
             for (String id : reputationTracker.keySet()) {
-                if (id.equals("_id")) continue;
-
+                if(id.equals("_id")) continue;
                 board.put(id, reputationTracker.getInteger(id));
             }
         }
@@ -150,10 +149,6 @@ public class Database extends ListenerAdapter {
     private void updateName(User user) {
         if (user.isBot()) return;
         nameCache.put(user.getId(), user.getAsTag());
-    }
-
-    @Override
-    public void onShutdown(@NotNull ShutdownEvent event) {
     }
 
 }

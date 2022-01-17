@@ -1,5 +1,6 @@
 package bot.listeners;
 
+import bot.Main;
 import bot.database.Database;
 import bot.database.ReputationsResult;
 import bot.commands.ReputationLeaderboard;
@@ -13,6 +14,7 @@ import net.dv8tion.jda.api.interactions.components.Button;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
+import java.util.Objects;
 
 public class ReputationLeaderboardButtons extends ListenerAdapter {
     @Override
@@ -21,8 +23,8 @@ public class ReputationLeaderboardButtons extends ListenerAdapter {
         String userId = id[0];
         String buttonId = id[1];
 
-        if (!event.getMember().getId().equals(userId)) {
-            event.reply("You are not the one who requested the leaderboard. Use `g!leaderboard` to create a new one.")
+        if (!Objects.requireNonNull(event.getMember()).getId().equals(userId)) {
+            event.reply("You are not the one who requested the leaderboard. Use `" + Main.getPrefix() + "leaderboard` to create a new one.")
                     .setEphemeral(true).queue();
         }
 
