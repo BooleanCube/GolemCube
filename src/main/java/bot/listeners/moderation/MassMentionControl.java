@@ -4,6 +4,7 @@ import bot.Main;
 import bot.Tools;
 import bot.module.Module;
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.entities.ChannelType;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
@@ -19,6 +20,10 @@ public class MassMentionControl extends ListenerAdapter {
     @Override
     public void onMessageReceived(@Nonnull MessageReceivedEvent event) {
         if (!Main.getModuleManager().isEnabled(Module.MASS_MENTION_CONTROL)) return;
+        if (event.getAuthor().isBot()) return;
+        if (event.getChannelType() != ChannelType.TEXT || event.getChannelType() != ChannelType.GUILD_PUBLIC_THREAD)
+            return;
+
         if (event.getMessage().getMentionedMembers().size() >= 1) {
             if (memberToMentions.containsKey(event.getMember())) {
                 memberToMentions.get(event.getMember()).mentions += event.getMessage().getMentionedMembers().size();
@@ -31,9 +36,9 @@ public class MassMentionControl extends ListenerAdapter {
         }
     }
 
-    class MENTIONS {
-        public int mentions = 0;
-        public long lastTimeMention = 0;
+    static class MENTIONS {
+        public int mentions;
+        public long lastTimeMention;
 
         public MENTIONS(int m, long lt) {
             mentions = m;
