@@ -7,6 +7,7 @@ import bot.module.Module;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.ChannelType;
 import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.events.ReadyEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
@@ -57,9 +58,13 @@ public class SpamControl extends ListenerAdapter {
             int msgNum = messageTracking.get(member).msgNum++;
             long lastTimeSent = messageTracking.get(member).lastTimeSent;
             if (msgNum == scmessages && System.currentTimeMillis() - lastTimeSent <= scseconds * 1000) {
-                member.getUser().openPrivateChannel().queue(c ->
-                        c.sendMessageEmbeds(new EmbedBuilder().setDescription("You have been muted for **5 minutes** for spamming in a channel! You have also been given **1 warning**!").build()).queue()
-                );
+                member.getUser().openPrivateChannel().queue(c -> {
+                    MessageEmbed embed = new EmbedBuilder().setDescription("You have been muted for **5 minutes** for spamming in a channel! You have also been given **1 warning**!").setFooter(member.getEffectiveName()).build();
+                    c.sendMessageEmbeds(embed).queue(m -> {
+                            },
+                            e -> event.getChannel().sendMessageEmbeds(embed).queue()
+                    );
+                });
                 event.getChannel().sendMessage("Please do not spam! You have been muted for `5 minutes`!").queue();
                 if (Tools.memberToWarns.computeIfAbsent(member, (m) -> new ArrayList<>()).size() >= 4) {
                     event.getChannel().sendMessage("Kicked " + member.getAsMention() + " from the server because they exceeded `3 warnings`!").queue();
