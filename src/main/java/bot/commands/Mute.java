@@ -30,7 +30,7 @@ public class Mute implements Command {
         final MessageChannel channel = event.getChannel();
         final Message message = event.getMessage();
         final Member member = event.getMember();
-        if (args.size() < 2 || message.getMentionedMembers().isEmpty()) {
+        if (message.getMentionedMembers().isEmpty()) {
             Tools.wrongUsage(channel, this);
             return;
         }
