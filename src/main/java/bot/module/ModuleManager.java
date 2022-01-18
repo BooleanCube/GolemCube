@@ -8,7 +8,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class ModuleManager {
-
     private final ConfigManager<ModuleConfig> configManager;
     private final Map<Integer, Boolean> modules = new HashMap<>();
 

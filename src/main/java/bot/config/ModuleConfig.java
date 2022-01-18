@@ -4,7 +4,6 @@ import space.arim.dazzleconf.annote.ConfDefault;
 import space.arim.dazzleconf.annote.ConfKey;
 
 public interface ModuleConfig {
-
     @ConfKey("spam-control")
     @ConfDefault.DefaultBoolean(true)
     boolean spamControl();
@@ -13,7 +12,6 @@ public interface ModuleConfig {
     @ConfDefault.DefaultBoolean(true)
     boolean massMentionControl();
 
-
     @ConfKey("link-control")
     @ConfDefault.DefaultBoolean(true)
     boolean linkControl();
@@ -21,5 +19,4 @@ public interface ModuleConfig {
     @ConfKey("suggestionListener")
     @ConfDefault.DefaultBoolean(true)
     boolean suggestionListener();
-
 }

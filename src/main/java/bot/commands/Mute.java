@@ -13,7 +13,6 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import java.util.List;
 
 public class Mute implements Command {
-
     @Override
     public String getCommand() {
         return "mute";
@@ -35,11 +34,10 @@ public class Mute implements Command {
             return;
         }
         final Member target = message.getMentionedMembers().get(0);
-        if (target.getRoles().stream().anyMatch(it -> it.getIdLong() == 741287382757933206L)) {
+        if (target.isTimedOut()) {
             channel.sendMessageEmbeds(new EmbedBuilder().setDescription("The user is already in timeout!").build()).queue();
             return;
         }
-
         if (!member.hasPermission(Permission.MODERATE_MEMBERS)) {
             channel.sendMessageEmbeds(new EmbedBuilder().setDescription("You don't have Permission to Timeout Members!").build()).queue();
             return;
@@ -57,7 +55,7 @@ public class Mute implements Command {
             return;
         }
         int minutes = 0;
-        String reason = "unkown";
+        String reason = "unknown";
         try {
             minutes = Integer.parseInt(args.get(1));
         } catch (Exception ignored) {}
@@ -66,7 +64,7 @@ public class Mute implements Command {
             else reason = String.join(" ", args.subList(2, args.size()));
         } catch (Exception ignored) {}
         try {
-            Tools.muteMember(target, event.getGuild(), minutes, reason);
+            Tools.muteMember(target, minutes, reason);
             event.getChannel().sendMessageEmbeds(new EmbedBuilder().setDescription("Successfully sent " + target.getAsMention() + " into timeout!").build()).queue();
         } catch (Exception e) {
             event.getChannel().sendMessageEmbeds(new EmbedBuilder().setDescription("Could not send " + target.getAsMention() + " into timeout!").build()).queue();

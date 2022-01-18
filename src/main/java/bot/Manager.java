@@ -9,8 +9,7 @@ import java.util.*;
 import java.util.regex.Pattern;
 
 public class Manager {
-    Logger LOGGER = LoggerFactory.getLogger(Manager.class);
-
+    private static final Logger LOGGER = LoggerFactory.getLogger(Manager.class);
     private final Map<String, Command> commands = new HashMap<>();
 
     Manager() {

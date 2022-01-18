@@ -1,30 +1,28 @@
 package bot.listeners.moderation;
 
-import bot.Main;
 import bot.Tools;
 import bot.config.Config;
 import bot.module.Module;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.MessageEmbed;
+import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.events.ReadyEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
-import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
 import javax.annotation.Nonnull;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
 @SuppressWarnings("ConstantConditions")
-public class SpamControl extends ListenerAdapter {
+public class SpamControl extends ModuleController {
     static List<String> blackListedChannels;
     static List<String> blackListedMembers;
     static List<String> blackListedRoles;
-
-    HashMap<Member, MessageHistory> messageTracking = new HashMap<>();
+    private final HashMap<String, MessageHistory> messageTracking = new HashMap<>();
 
     public SpamControl(Config config) {
+        super(Module.SPAM_CONTROL);
         blackListedChannels = config.channelSpamBlacklist();
         blackListedMembers = config.memberSpamBlacklist();
         blackListedRoles = config.roleSpamBlacklist();
@@ -34,15 +32,13 @@ public class SpamControl extends ListenerAdapter {
     }
 
     @Override
-    public void onMessageReceived(@Nonnull MessageReceivedEvent event) {
-        if (!Main.getModuleManager().isEnabled(Module.SPAM_CONTROL)) return;
-        if (event.getAuthor().isBot()) return;
-        if(!event.isFromGuild()) return;
+    public void check(MessageReceivedEvent event) {
         Member member = event.getMember();
+        String id = member.getId();
 
         if (blackListedChannels.contains(event.getChannel().getId())
-                || blackListedMembers.contains(member.getId())
-                || member.getRoles().stream().anyMatch(it -> blackListedRoles.contains(it.getId()))) {
+            || blackListedMembers.contains(id)
+            || member.getRoles().stream().map(Role::getId).anyMatch(blackListedRoles::contains)) {
             return;
         }
 
@@ -50,33 +46,36 @@ public class SpamControl extends ListenerAdapter {
         int scmessages = 5;
         int scseconds = 2;
 
-        if (!messageTracking.containsKey(member)) {
-            messageTracking.put(member, new MessageHistory(1, System.currentTimeMillis()));
-        } else {
-            int msgNum = messageTracking.get(member).msgNum++;
-            long lastTimeSent = messageTracking.get(member).lastTimeSent;
-            if (msgNum == scmessages && System.currentTimeMillis() - lastTimeSent <= scseconds * 1000) {
-                member.getUser().openPrivateChannel().queue(c -> {
-                    MessageEmbed embed = new EmbedBuilder().setDescription("You have been muted for **5 minutes** for spamming in a channel! You have also been given **1 warning**!").setFooter(member.getEffectiveName()).build();
-                    c.sendMessageEmbeds(embed).queue(m -> {
-                            },
-                            e -> event.getChannel().sendMessageEmbeds(embed).queue()
-                    );
-                });
-                event.getChannel().sendMessage("Please do not spam! You have been muted for `5 minutes` and given `1 warning`!").queue();
-                if (Tools.memberToWarns.computeIfAbsent(member, (m) -> new ArrayList<>()).size() >= 4) {
-                    event.getChannel().sendMessage("Kicked " + member.getAsMention() + " from the server because they exceeded `3 warnings`!").queue();
-                    member.kick("Exceeded 3 warnings!").queue();
-                }
-                Tools.muteMember(member, event.getGuild(), 5, "Spamming");
-            } else if (System.currentTimeMillis() - lastTimeSent > scseconds * 1000) {
-                messageTracking.get(member).msgNum = 1;
-                messageTracking.get(member).lastTimeSent = System.currentTimeMillis();
+        MessageHistory history = messageTracking.get(id);
+        long time = System.currentTimeMillis();
+        if (history == null) {
+            messageTracking.put(id, new MessageHistory(1, time));
+            return;
+        }
+        history.msgNum++;
+        if (history.msgNum == scmessages && time - history.lastTimeSent <= scseconds * 1000) {
+            MessageEmbed embed = new EmbedBuilder()
+                .setDescription("You have been muted for **5 minutes** for spamming in a channel! You have also been given **1 warning**!")
+                .setFooter(member.getEffectiveName())
+                .build();
+            member.getUser()
+                .openPrivateChannel()
+                .flatMap(c -> c.sendMessageEmbeds(embed))
+                .onErrorFlatMap(e -> event.getChannel().sendMessageEmbeds(embed))
+                .queue();
+            event.getChannel().sendMessage("Please do not spam, " + event.getAuthor().getAsMention() + "! You have been muted for `5 minutes` and given `1 warning`!").queue();
+            if (Tools.getWarns(member.getId()).size() >= 4) {
+                event.getChannel().sendMessage("Kicked " + member.getAsMention() + " from the server because they exceeded `3 warnings`!").queue();
+                member.kick("Exceeded 3 warnings!").queue();
             }
-            messageTracking.get(member).lastTimeSent = System.currentTimeMillis();
+            Tools.muteMember(member, 5, "Spamming");
+        } else if (time - history.lastTimeSent > scseconds * 1000) {
+            history.msgNum = 1;
+            history.lastTimeSent = time;
         }
     }
 
+    // TODO: is this necessary? We have the constructor to add blacklists
     @Override
     public void onReady(@Nonnull ReadyEvent event) {
         //Add all of your blacklists here

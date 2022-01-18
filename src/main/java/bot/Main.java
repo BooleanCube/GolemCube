@@ -49,7 +49,7 @@ public class Main {
                 .setChunkingFilter(ChunkingFilter.ALL)
                 .setMemberCachePolicy(MemberCachePolicy.ALL)
                 .enableIntents(GatewayIntent.GUILD_MEMBERS, GatewayIntent.DIRECT_MESSAGES)
-                .setActivity(Activity.watching("over this village! | " + Main.getPrefix() + "help"))
+                .setActivity(Activity.watching("over this village! | " + PREFIX + "help"))
                 .addEventListeners(
                         new Database(),
                         new Listener(),

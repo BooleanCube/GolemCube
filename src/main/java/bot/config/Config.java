@@ -8,7 +8,6 @@ import space.arim.dazzleconf.sorter.AnnotationBasedSorter.Order;
 import java.util.List;
 
 public interface Config {
-
     @Order(1)
     @ConfKey("token")
     @ConfDefault.DefaultString("TmV2ZXIgZ29ubmEgZ2l2ZSB5b3U.gdXAKTmV2ZXIgZ29ubmEgbGV0IHlvdSBkb3du")
@@ -59,5 +58,4 @@ public interface Config {
     @ConfKey("member-spam-blacklist")
     @ConfDefault.DefaultStrings("No one can Spam 😈")
     List<String> memberSpamBlacklist();
-
 }

@@ -18,12 +18,10 @@ import java.io.UncheckedIOException;
 import java.nio.file.Path;
 
 public final class ConfigManager<C> {
-
     private final ConfigurationHelper<C> configHelper;
     private final Path filePath;
-    private volatile C configData;
-
     private final Logger LOGGER = LoggerFactory.getLogger(ConfigManager.class);
+    private volatile C configData;
 
     private ConfigManager(ConfigurationHelper<C> configHelper, Path filePath) {
         this.configHelper = configHelper;
@@ -78,5 +76,4 @@ public final class ConfigManager<C> {
             LOGGER.error("Something went wrong when writing Config", e);
         }
     }
-
 }

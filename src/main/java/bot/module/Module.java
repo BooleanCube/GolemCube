@@ -27,6 +27,4 @@ public enum Module {
     public String[] getAliases() {
         return aliases;
     }
-
-
 }
