@@ -11,7 +11,6 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 public class Purge implements Command {
-
     @Override
     public String getCommand() {
         return "purge";
@@ -64,5 +63,4 @@ public class Purge implements Command {
             Tools.wrongUsage(event.getChannel(), this);
         }
     }
-
 }
