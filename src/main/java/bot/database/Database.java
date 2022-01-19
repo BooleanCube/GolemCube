@@ -53,12 +53,13 @@ public class Database extends ListenerAdapter {
         LOGGER.info("Connected to MongoDB");
     }
 
-    public static void addReputation(Member m) {
+    public static int addReputation(Member m) {
         String id = m.getId();
         Integer reps = getReputation(m) + 1;
         executor.execute(() -> reputationCollection.findOneAndUpdate(filter, Updates.set(id, 1)));
         board.put(id, reps);
         LOGGER.info("Updated reputation of {} to {}", m.getUser().getAsTag(), reps);
+        return reps;
     }
 
     public static int getReputation(Member m) {
