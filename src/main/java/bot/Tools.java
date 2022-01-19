@@ -3,96 +3,82 @@ package bot;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.MessageChannel;
+import net.dv8tion.jda.api.entities.User;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.StringJoiner;
 import java.util.concurrent.TimeUnit;
 
 public class Tools {
-
-    public static HashMap<Member, List<Warning>> memberToWarns = new HashMap<>();
+    public static HashMap<String, List<Warning>> memberToWarns = new HashMap<>();
 
     public static void wrongUsage(MessageChannel tc, Command c) {
         tc.sendMessage("Wrong Command Usage!\n" + c.getHelp()).queue();
     }
 
     public static Member getEffectiveMember(Guild g, String s) {
-        Member m;
-        try {
-            long id = Long.parseLong(s.replaceAll("[<@!>]", ""));
-            m = g.getMemberById(id);
-        } catch (Exception e) {
-            try {
-                m = g.getMemberByTag(s);
-            } catch (Exception e2) {
-                try {
-                    m = g.getMembersByEffectiveName(s, true).get(0);
-                } catch (Exception e3) {
-                    try {
-                        m = g.getMembersByName(s, true).get(0);
-                    } catch (Exception e4) {
-                        return null;
-                    }
-                }
-            }
+        Member m = g.getMemberById(s.replaceAll("[<@!>]", ""));
+        if (m == null && User.USER_TAG.matcher(s).matches()) {
+            m = g.getMemberByTag(s);
+        }
+        if (m == null) {
+            m = g.getMembersByEffectiveName(s, true).get(0);
+        }
+        if (m == null) {
+            m = g.getMembersByName(s, true).get(0);
         }
         return m;
     }
 
-    public static void muteMember(Member m, Guild g, long minutes, String reason) {
-        g.timeoutFor(m, minutes, TimeUnit.MINUTES).queue();
-
-        if (!memberToWarns.containsKey(m)) {
-            ArrayList<Warning> warning = new ArrayList<>();
-            warning.add(new Warning(reason, System.currentTimeMillis()));
-            memberToWarns.put(m, warning);
-        } else memberToWarns.get(m).add(new Warning(reason, System.currentTimeMillis()));
+    public static void muteMember(Member m, long minutes, String reason) {
+        m.timeoutFor(minutes, TimeUnit.MINUTES).reason(reason).queue();
+        getWarns(m.getId()).add(new Warning(reason, System.currentTimeMillis()));
     }
 
     public static void unmuteMember(Member m, Guild g) {
         g.removeTimeout(m).queue();
     }
 
-    public static String secondsToTime(long timeseconds) {
-        StringBuilder builder = new StringBuilder();
-        int years = (int) (timeseconds / (60 * 60 * 24 * 365));
+    public static String secondsToTime(long seconds) {
+        StringJoiner joiner = new StringJoiner(", ").setEmptyValue("**No time**");
+        int years = (int) (seconds / (60 * 60 * 24 * 365));
         if (years > 0) {
-            builder.append("**").append(years).append("** years, ");
-            timeseconds = timeseconds % (60 * 60 * 24 * 365);
+            joiner.add("**" + years + "** years");
+            seconds %= 60 * 60 * 24 * 365;
         }
-        int weeks = (int) (timeseconds / (60 * 60 * 24 * 365));
+        int weeks = (int) (seconds / (60 * 60 * 24 * 365));
         if (weeks > 0) {
-            builder.append("**").append(weeks).append("** weeks, ");
-            timeseconds = timeseconds % (60 * 60 * 24 * 7);
+            joiner.add("**" + weeks + "** weeks");
+            seconds %= 60 * 60 * 24 * 7;
         }
-        int days = (int) (timeseconds / (60 * 60 * 24));
+        int days = (int) (seconds / (60 * 60 * 24));
         if (days > 0) {
-            builder.append("**").append(days).append("** days, ");
-            timeseconds = timeseconds % (60 * 60 * 24);
+            joiner.add("**" + days + "** days");
+            seconds %= 60 * 60 * 24;
         }
-        int hours = (int) (timeseconds / (60 * 60));
+        int hours = (int) (seconds / (60 * 60));
         if (hours > 0) {
-            builder.append("**").append(hours).append("** hours, ");
-            timeseconds = timeseconds % (60 * 60);
+            joiner.add("**" + hours + "** hours");
+            seconds %= 60 * 60;
         }
-        int minutes = (int) (timeseconds / (60));
+        int minutes = (int) (seconds / 60);
         if (minutes > 0) {
-            builder.append("**").append(minutes).append("** minutes, ");
-            timeseconds = timeseconds % (60);
+            joiner.add("**" + minutes + "** minutes");
+            seconds %= 60;
         }
-        if (timeseconds > 0)
-            builder.append("**").append(timeseconds).append("** seconds");
-        String str = builder.toString();
-        if (str.endsWith(", "))
-            str = str.substring(0, str.length() - 2);
-        if (str.equals(""))
-            str = "**No time**";
-        return str;
+        if (seconds > 0) {
+            joiner.add("**" + seconds + "** seconds");
+        }
+        return joiner.toString();
     }
 
     public static int boolToBinary(boolean b) {
         return b ? 1 : 0;
     }
 
+    public static List<Warning> getWarns(String id) {
+        return memberToWarns.computeIfAbsent(id, x -> new ArrayList<>());
+    }
 }

@@ -4,15 +4,13 @@ import net.dv8tion.jda.api.events.ReadyEvent;
 import net.dv8tion.jda.api.events.ShutdownEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
-import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nonnull;
 
 public class Listener extends ListenerAdapter {
-    Logger LOGGER = LoggerFactory.getLogger(Listener.class);
-
+    private static final Logger LOGGER = LoggerFactory.getLogger(Listener.class);
     public final Manager m = new Manager();
 
     @Override
@@ -30,7 +28,7 @@ public class Listener extends ListenerAdapter {
     }
 
     @Override
-    public void onShutdown(@NotNull ShutdownEvent event) {
+    public void onShutdown(@Nonnull ShutdownEvent event) {
         Main.getModuleManager().writeConfig();
     }
 }
