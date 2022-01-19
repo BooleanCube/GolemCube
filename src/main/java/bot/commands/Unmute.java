@@ -2,6 +2,7 @@ package bot.commands;
 
 import bot.Command;
 import bot.Tools;
+import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
@@ -11,7 +12,6 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import java.util.List;
 
 public class Unmute implements Command {
-
     @Override
     public String getCommand() {
         return "unmute";
@@ -35,33 +35,29 @@ public class Unmute implements Command {
 
         final Member target = message.getMentionedMembers().get(0);
 
-        if (target.getRoles().stream().anyMatch(it -> it.getIdLong() == 741287382757933206L)) {
-            channel.sendMessage("The User is already Muted!").queue();
+        if (!target.isTimedOut()) {
+            channel.sendMessageEmbeds(new EmbedBuilder().setDescription("The user is not in timeout!").build()).queue();
             return;
         }
-
         if (!member.hasPermission(Permission.MODERATE_MEMBERS)) {
-            channel.sendMessage("You don't have Permission to Mute Members!").queue();
+            channel.sendMessageEmbeds(new EmbedBuilder().setDescription("You don't have Permission to Timeout Members!").build()).queue();
             return;
         }
-
         if (!event.getGuild().getSelfMember().hasPermission(Permission.MODERATE_MEMBERS)) {
-            event.getChannel().sendMessage("I don't have the **MANAGE_ROLES** Permission!").queue();
+            event.getChannel().sendMessageEmbeds(new EmbedBuilder().setDescription("I don't have the **Timeout Members** Permission!").build()).queue();
             return;
         }
-
-        if (!event.getGuild().getSelfMember().canInteract(target) || target.hasPermission(Permission.MODERATE_MEMBERS)) {
-            event.getChannel().sendMessage("I can't mute that user! The user has a higher role or is a moderator!").queue();
+        if (!event.getGuild().getSelfMember().canInteract(target)) {
+            event.getChannel().sendMessageEmbeds(new EmbedBuilder().setDescription("I can't unmute that user! The user has a higher role!").build()).queue();
             return;
         }
-
         if (!member.canInteract(target)) {
-            event.getChannel().sendMessage("You can't mute that user! The user has a higher role or is a moderator!").queue();
+            event.getChannel().sendMessageEmbeds(new EmbedBuilder().setDescription("You can't timeout that user! The user has a higher role!").build()).queue();
             return;
         }
 
         try {
-            Tools.unmuteMember(target, event.getGuild());
+            Tools.unmuteMember(target);
             event.getChannel().sendMessage("Successfully unmuted " + target.getAsMention()).queue();
         } catch (Exception e) {
             event.getChannel().sendMessage("Could not unmute " + target.getAsMention()).queue();

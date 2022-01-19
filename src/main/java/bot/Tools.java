@@ -37,8 +37,8 @@ public class Tools {
         getWarns(m.getId()).add(new Warning(reason, System.currentTimeMillis()));
     }
 
-    public static void unmuteMember(Member m, Guild g) {
-        g.removeTimeout(m).queue();
+    public static void unmuteMember(Member m) {
+        m.removeTimeout().queue();
     }
 
     public static String secondsToTime(long seconds) {
