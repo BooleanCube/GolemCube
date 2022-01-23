@@ -35,8 +35,8 @@ public class Unmute implements Command {
 
         final Member target = message.getMentionedMembers().get(0);
 
-        if (!target.isTimedOut()) {
-            channel.sendMessageEmbeds(new EmbedBuilder().setDescription("The user is not in timeout!").build()).queue();
+        if (target.isTimedOut()) {
+            channel.sendMessageEmbeds(new EmbedBuilder().setDescription("The user is in timeout!").build()).queue();
             return;
         }
         if (!member.hasPermission(Permission.MODERATE_MEMBERS)) {
