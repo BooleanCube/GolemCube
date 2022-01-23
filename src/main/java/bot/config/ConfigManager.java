@@ -50,14 +50,12 @@ public final class ConfigManager<C> {
             throw new UncheckedIOException(ex);
         } catch (ConfigFormatSyntaxException ex) {
             configData = configHelper.getFactory().loadDefaults();
-            System.err.println("The yaml syntax in your configuration is invalid. "
-                    + "Check your YAML syntax with a tool such as https://yaml-online-parser.appspot.com/");
-            ex.printStackTrace();
+            LOGGER.error("The yaml syntax in your configuration is invalid. "
+                    + "Check your YAML syntax with a tool such as https://yaml-online-parser.appspot.com/", ex);
         } catch (InvalidConfigException ex) {
             configData = configHelper.getFactory().loadDefaults();
-            System.err.println("One of the values in your configuration is not valid. "
-                    + "Check to make sure you have specified the right data types.");
-            ex.printStackTrace();
+            LOGGER.error("One of the values in your configuration is not valid. "
+                    + "Check to make sure you have specified the right data types.", ex);
         }
     }
 

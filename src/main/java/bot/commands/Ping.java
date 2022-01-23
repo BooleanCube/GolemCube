@@ -9,7 +9,6 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import java.util.List;
 
 public class Ping implements Command {
-
     @Override
     public String getCommand() {
         return "ping";
@@ -34,5 +33,4 @@ public class Ping implements Command {
             Tools.wrongUsage(event.getChannel(), this);
         }
     }
-
 }

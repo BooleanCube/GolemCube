@@ -10,7 +10,6 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import java.util.List;
 
 public class Ban implements Command {
-
     @Override
     public String getCommand() {
         return "ban";

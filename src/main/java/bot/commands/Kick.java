@@ -12,7 +12,6 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import java.util.List;
 
 public class Kick implements Command {
-
     @Override
     public String getCommand() {
         return "kick";
@@ -60,6 +59,4 @@ public class Kick implements Command {
         target.kick(args.size() == 1 ? "" : String.join(" ", args.subList(1, args.size()))).queue();
         event.getChannel().sendMessage("Successfully kicked " + target.getUser().getAsTag() + " from the server!").queue();
     }
-
-
 }
