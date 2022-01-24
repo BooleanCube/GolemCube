@@ -1,18 +1,27 @@
 package bot;
 
 import bot.commands.*;
-import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
+import net.dv8tion.jda.api.interactions.commands.build.CommandData;
+import net.dv8tion.jda.api.interactions.commands.privileges.CommandPrivilege;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.*;
-import java.util.regex.Pattern;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
+@SuppressWarnings({"ConstantConditions"})
 public class Manager {
-    private static final Logger LOGGER = LoggerFactory.getLogger(Manager.class);
+    private final Logger LOGGER = LoggerFactory.getLogger(Manager.class);
     private final Map<String, Command> commands = new HashMap<>();
+    private final Map<String, Long> commandIds = new HashMap<>();
 
-    Manager() {
+    Manager(JDA jda) {
         //commands
         addCommand(new Ping());
         addCommand(new Help(this));
@@ -28,12 +37,25 @@ public class Manager {
         addCommand(new ReputationLeaderboard());
         addCommand(new Toggle());
         addCommand(new Settings());
+
+        List<CommandData> commands = this.commands.values().stream().map(Command::getCommandData).collect(Collectors.toList());
+        commands.add(new CommandData("shutdown", "Shuts down the bot.").setDefaultEnabled(false));
+
+        Guild guild = jda.getGuildById(Main.getMainServerId());
+
+        // Update Commands only in our guild
+        guild.updateCommands().addCommands(commands).queue(e -> e.forEach(it -> commandIds.put(it.getName(), it.getIdLong())));
+
+        guild.updateCommandPrivilegesById(commandIds.get("shutdown"), CommandPrivilege.enableUser(Main.getOwnerId())).queue();
+        // We can do the same for other commands, but permissions is not a CommandPrivilege...
     }
 
     private void addCommand(Command c) {
-        if (!commands.containsKey(c.getCommand())) {
-            commands.put(c.getCommand(), c);
-            LOGGER.info("Added " + c.getCommand() + " command");
+        String name = c.getCommandData().getName();
+
+        if (!commands.containsKey(name)) {
+            commands.put(name, c);
+            LOGGER.info("Added " + name + " command");
         }
     }
 
@@ -41,22 +63,7 @@ public class Manager {
         return commands.values();
     }
 
-    public Command getCommand(String commandName) {
-        if (commandName == null) {
-            return null;
-        }
-        return commands.get(commandName);
-    }
-
-    void run(MessageReceivedEvent event) {
-        String msg = event.getMessage().getContentRaw();
-        if (!msg.startsWith(Main.getPrefix())) return;
-
-        final String[] split = msg.replaceFirst("(?i)" + Pattern.quote(Main.getPrefix()), "").split("\\s+");
-        final String command = split[0].toLowerCase();
-        if (commands.containsKey(command)) {
-            final List<String> args = Arrays.asList(split).subList(1, split.length);
-            commands.get(command).run(args, event);
-        }
+    void run(SlashCommandEvent event) {
+        commands.get(event.getName()).run(event);
     }
 }

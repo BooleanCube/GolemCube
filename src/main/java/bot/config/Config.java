@@ -21,11 +21,6 @@ public interface Config {
     String databaseURI();
 
     @Order(3)
-    @ConfKey("prefix")
-    @ConfDefault.DefaultString("g!")
-    String prefix();
-
-    @Order(3)
     @ConfKey("owner-id")
     @ConfDefault.DefaultString("525126007330570259")
     @ConfComments("The owner of this bot.")
@@ -37,6 +32,7 @@ public interface Config {
     @ConfComments("The server which the bot will handle.")
     String mainServerID();
 
+    @Order(5)
     @ConfKey("suggestion-channel-id")
     @ConfDefault.DefaultString("901832454904614953")
     @ConfComments("The suggestion channel id. If there is none leave it to -1.")

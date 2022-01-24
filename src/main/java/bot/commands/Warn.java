@@ -1,37 +1,39 @@
 package bot.commands;
 
 import bot.Command;
-import bot.Main;
 import bot.Tools;
 import bot.Warning;
-import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
+import net.dv8tion.jda.api.interactions.commands.OptionMapping;
+import net.dv8tion.jda.api.interactions.commands.OptionType;
+import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 
 import java.util.List;
 
 public class Warn implements Command {
-    @Override
-    public String getCommand() {
-        return "warn";
-    }
 
     @Override
-    public String getHelp() {
-        return "Warns a member!\n" +
-            "Usage: `" + Main.getPrefix() + getCommand() + " <member> <reason>`";
+    public CommandData getCommandData() {
+        return new CommandData("warn", "Warns a member!")
+                .addOption(OptionType.USER, "user", "The user to be warned", true)
+                .addOption(OptionType.STRING, "reason", "The reason for this action.");
     }
 
+    @SuppressWarnings("ConstantConditions")
     @Override
-    public void run(List<String> args, MessageReceivedEvent event) {
-        if (event.getMember().getRoles().contains(event.getGuild().getRoleById(773337238952083477L))) {
+    public void run(SlashCommandEvent event) {
+        if (event.getMember().getRoles().stream().anyMatch(it -> it.getId().equals("773337238952083477"))) {
             try {
-                String id = Long.getLong(args.get(0).replaceAll("[<@!>]", "")).toString(); //checks to see if the first argument is a ping or a number(id)
+                String id = event.getOption("user").getAsMember().getId();
                 List<Warning> warns = Tools.getWarns(id);
-                String reason = args.size() == 1 ? "No reason provided!" : String.join(" ", args.subList(1, args.size()));
-                warns.add(new Warning(reason, System.currentTimeMillis()));
+
+                OptionMapping reason = event.getOption("reason");
+
+                warns.add(new Warning(reason == null ? "No reason provided!" : reason.getAsString(), System.currentTimeMillis()));
                 event.getChannel().sendMessage("Successfully warned <@" + id + "> for `" + reason + "`").queue();
-                if (warns.size() >= 4) {
-                    event.getChannel().sendMessage("Banned <@" + id + "> from the server because they exceeded `3 warnings`!").queue();
-                    event.getGuild().ban(id, 7, "Exceeded 3 warnings!").queue();
+                if (warns.size() > 3) {
+                    event.getGuild().ban(id, 7, "Exceeded 3 warnings!").queue(v ->
+                            event.reply("Banned <@" + id + "> from the server because they exceeded `3 warnings`!").queue());
                 }
             } catch (Exception e) {
                 Tools.wrongUsage(event.getChannel(), this);

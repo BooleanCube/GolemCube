@@ -1,80 +1,56 @@
 package bot.commands;
 
 import bot.Command;
-import bot.Main;
-import bot.Tools;
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.*;
-import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
+import net.dv8tion.jda.api.interactions.commands.OptionMapping;
+import net.dv8tion.jda.api.interactions.commands.OptionType;
+import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 
-import java.util.List;
-
+@SuppressWarnings("ConstantConditions")
 public class Ban implements Command {
     @Override
-    public String getCommand() {
-        return "ban";
+    public CommandData getCommandData() {
+        return new CommandData("ban", "Bans a User from the Server!")
+                .addOption(OptionType.USER, "user", "The user to be banned.", true)
+                .addOption(OptionType.INTEGER, "deldays", "The history of messages, in days, that will be deleted.")
+                .addOption(OptionType.STRING, "reason", "The reason for this action.")
+                .setDefaultEnabled(false);
     }
 
     @Override
-    public String getHelp() {
-        return "Bans a User from the Server!\n" +
-                "Usage: `" + Main.getPrefix() + getCommand() + " <user> <time|days> <reason>`";
-    }
-
-    @Override
-    public void run(List<String> args, MessageReceivedEvent event) {
-        final MessageChannel channel = event.getChannel();
-        final Message message = event.getMessage();
-        final Member member = event.getMember();
-
-        if (args.size() < 2 || message.getMentionedMembers().isEmpty()) {
-            Tools.wrongUsage(channel, this);
-            return;
-        }
-
-        final Member target = message.getMentionedMembers().get(0);
+    public void run(SlashCommandEvent event) {
+        Member member = event.getMember();
 
         if (!member.hasPermission(Permission.BAN_MEMBERS)) {
-            channel.sendMessage("You don't have Permission to Ban Members!").queue();
+            event.reply("You don't have Permission to Ban Members!").setEphemeral(true).queue();
             return;
         }
 
         if (!event.getGuild().getSelfMember().hasPermission(Permission.BAN_MEMBERS)) {
-            event.getChannel().sendMessage("I don't have the **BAN_MEMBERS** Permission!").queue();
+            event.reply("I don't have the **BAN_MEMBERS** Permission!").setEphemeral(true).queue();
             return;
         }
 
+        Member target = event.getOption("user").getAsMember();
+
         if (!event.getGuild().getSelfMember().canInteract(target) || target.hasPermission(Permission.BAN_MEMBERS)) {
-            event.getChannel().sendMessage("I can't ban that user! The user has a higher role or is a moderator!").queue();
+            event.reply("I can't ban that user! The user has a higher role or is a moderator!").setEphemeral(true).queue();
             return;
         }
 
         if (!member.canInteract(target)) {
-            event.getChannel().sendMessage("You can't ban that user! The user has a higher role or is a moderator!").queue();
+            event.reply("You can't ban that user! The user has a higher role or is a moderator!").setEphemeral(true).queue();
             return;
         }
 
-        int days = 0;
-        String reason = "";
-        try {
-            days = Integer.parseInt(args.get(1));
-        } catch (Exception ignored) {
-        }
-        try {
-            if (days == 0) {
-                reason = String.join(" ", args.subList(1, args.size()));
-            } else {
-                reason = String.join(" ", args.subList(2, args.size()));
-            }
-        } catch (Exception ignored) {
-        }
+        OptionMapping delDays = event.getOption("deldays");
+        OptionMapping reason = event.getOption("reason");
 
-        try {
-            target.ban(days, reason.equals("") ? null : reason).queue();
-            event.getChannel().sendMessage("Successfully banned " + target.getAsMention()).queue();
-        } catch (Exception e) {
-            event.getChannel().sendMessage("Could not ban " + target.getAsMention()).queue();
-        }
+        int delDaysAsInt = Math.abs(Math.toIntExact(delDays == null ? 0 : delDays.getAsLong()));
 
+        target.ban(delDaysAsInt, reason == null ? null : reason.getAsString()).queue();
+        event.reply("Successfully banned " + target.getAsMention()).queue();
     }
 }

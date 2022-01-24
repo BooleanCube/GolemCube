@@ -1,63 +1,67 @@
 package bot.commands;
 
-import bot.*;
+import bot.Command;
 import bot.database.Database;
 import bot.database.ReputationsResult;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Emoji;
 import net.dv8tion.jda.api.entities.User;
-import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
+import net.dv8tion.jda.api.interactions.commands.OptionMapping;
+import net.dv8tion.jda.api.interactions.commands.OptionType;
+import net.dv8tion.jda.api.interactions.commands.build.CommandData;
+import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.api.interactions.components.Button;
 
 import java.util.List;
 
 public class ReputationLeaderboard implements Command {
+
     @Override
-    public String getCommand() {
-        return "lead";
+    public CommandData getCommandData() {
+        return new CommandData("lead", "Shows a list of 10 server members with the highest reputation.")
+                .addOptions(
+                        new OptionData(OptionType.INTEGER, "page", "The page number of the leaderboard.").setMinValue(0)
+                );
     }
 
     @Override
-    public String getHelp() {
-        return "Shows a list of 10 server members with the highest reputation\n" +
-                "Usage: `" + Main.getPrefix() + getCommand() + "` <page-number(optional)>";
-    }
-
-    @Override
-    public void run(List<String> args, MessageReceivedEvent event) {
-        User author = event.getAuthor();
+    public void run(SlashCommandEvent event) {
+        User author = event.getUser();
         String userId = author.getId();
 
-        try {
+        OptionMapping pageNumber = event.getOption("page");
+        int page = pageNumber == null ? 1 : Math.toIntExact(pageNumber.getAsLong());
 
-            int page = args.isEmpty() ? 1 : Integer.parseInt(args.get(0));
-            ReputationsResult reputations = Database.getMemberReputationsWithUser(author);
-            ReputationsResult.BMember member = reputations.getMember();
+        ReputationsResult reputations = Database.getMemberReputationsWithUser(author);
+        ReputationsResult.BMember bMember = reputations.getMember();
 
-            EmbedBuilder embed = new EmbedBuilder().setDescription("```" + getTable(reputations.getMemberReputations().get(page - 1)) + "```")
-                    .addField("Your Rank", "`" + member.getRank() + ". " + member.getName() + " : " + member.getPoints() + "`", false);
+        List<ReputationsResult.BMember> memberList = reputations.getMemberReputations().get(page - 1);
 
-            event.getChannel().sendMessageEmbeds(embed.build())
-                    .setActionRow(
-                            Button.primary(userId + ":previous", "Previous"),
-                            Button.success(userId + ":done:" + page, Emoji.fromUnicode("✅")),
-                            Button.danger(userId + ":delete:" + event.getMessageId(), Emoji.fromUnicode("\uD83D\uDDD1")),
-                            Button.primary(userId + ":next", "Next")
-                    ).queue();
-        } catch (NumberFormatException e) {
-            Tools.wrongUsage(event.getChannel(), this);
-        } catch (IndexOutOfBoundsException e) {
-            event.getChannel().sendMessage("No members on the page").queue();
+        if (memberList == null) {
+            event.reply("No members on the page").setEphemeral(true).queue();
+            return;
         }
+
+        EmbedBuilder embed = new EmbedBuilder().setDescription("```" + getTable(memberList) + "```")
+                .addField("Your Rank", "`" + bMember.getRank() + ". " + bMember.getName() + " : " + bMember.getPoints() + "`", false);
+
+        event.replyEmbeds(embed.build())
+                .addActionRow(
+                        Button.primary(userId + ":previous", "Previous"),
+                        Button.success(userId + ":done:" + page, Emoji.fromUnicode("✅")),
+                        Button.danger(userId + ":delete", Emoji.fromUnicode("\uD83D\uDDD1")),
+                        Button.primary(userId + ":next", "Next")
+                ).queue();
     }
 
     public static String getTable(List<ReputationsResult.BMember> memberList) {
         StringBuilder table = new StringBuilder();
-        final int nameSize = memberList.stream()
+        int nameSize = memberList.stream()
                 .mapToInt(it -> Math.min(it.getName().length(), 22))
                 .max()
                 .orElse(0);
-        final int pointSize = memberList.stream()
+        int pointSize = memberList.stream()
                 .mapToInt(it -> String.valueOf(it.getPoints()).length())
                 .max()
                 .orElse(0);
@@ -73,7 +77,7 @@ public class ReputationLeaderboard implements Command {
         table.append(String.format(rowFormat, "Rank ", "Name", "Points"));
         table.append(divider);
 
-        for (final ReputationsResult.BMember member : memberList) {
+        for (ReputationsResult.BMember member : memberList) {
             String name = member.getName();
             table.append(String.format(rowFormat, member.getRank() + ".", name.substring(0, Math.min(22, name.length())), member.getPoints()));
         }
