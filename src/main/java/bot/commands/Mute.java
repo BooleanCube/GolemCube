@@ -1,73 +1,59 @@
 package bot.commands;
 
 import bot.Command;
-import bot.Main;
 import bot.Tools;
-import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.MessageChannel;
-import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
+import net.dv8tion.jda.api.interactions.commands.OptionMapping;
+import net.dv8tion.jda.api.interactions.commands.OptionType;
+import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 
-import java.util.List;
-
+@SuppressWarnings("ConstantConditions")
 public class Mute implements Command {
+
     @Override
-    public String getCommand() {
-        return "mute";
+    public CommandData getCommandData() {
+        return new CommandData("mute", "Mutes a Member using Timeout!")
+                .addOption(OptionType.USER, "user", "User to be muted.", true)
+                .addOption(OptionType.INTEGER, "minutes", "Duration for mute in minutes.")
+                .addOption(OptionType.STRING, "reason", "The reason for this action.");
     }
 
     @Override
-    public String getHelp() {
-        return "Mutes a Member!\n" +
-                "Usage: `" + Main.getPrefix() + getCommand() + " <user> <time|seconds> <reason>`";
-    }
+    public void run(SlashCommandEvent event) {
+        Member member = event.getMember();
+        Member target = event.getOption("user").getAsMember();
 
-    @Override
-    public void run(List<String> args, MessageReceivedEvent event) {
-        final MessageChannel channel = event.getChannel();
-        final Message message = event.getMessage();
-        final Member member = event.getMember();
-        if (message.getMentionedMembers().isEmpty()) {
-            Tools.wrongUsage(channel, this);
-            return;
-        }
-        final Member target = message.getMentionedMembers().get(0);
         if (target.isTimedOut()) {
-            channel.sendMessageEmbeds(new EmbedBuilder().setDescription("The user is already in timeout!").build()).queue();
+            event.reply("The user is already in timeout!").setEphemeral(true).queue();
             return;
         }
+
         if (!member.hasPermission(Permission.MODERATE_MEMBERS)) {
-            channel.sendMessageEmbeds(new EmbedBuilder().setDescription("You don't have Permission to Timeout Members!").build()).queue();
+            event.reply("You don't have Permission to Timeout Members!").setEphemeral(true).queue();
             return;
         }
         if (!event.getGuild().getSelfMember().hasPermission(Permission.MODERATE_MEMBERS)) {
-            event.getChannel().sendMessageEmbeds(new EmbedBuilder().setDescription("I don't have the **Timeout Members** Permission!").build()).queue();
+            event.reply("I don't have the **Timeout Members** Permission!").setEphemeral(true).queue();
             return;
         }
+
         if (!event.getGuild().getSelfMember().canInteract(target) || target.hasPermission(Permission.MODERATE_MEMBERS)) {
-            event.getChannel().sendMessageEmbeds(new EmbedBuilder().setDescription("I can't timeout that user! The user has a higher role or is a moderator!").build()).queue();
+            event.reply("I can't timeout that user! The user has a higher role or is a moderator!").setEphemeral(true).queue();
             return;
         }
         if (!member.canInteract(target)) {
-            event.getChannel().sendMessageEmbeds(new EmbedBuilder().setDescription("You can't timeout that user! The user has a higher role or is a moderator!").build()).queue();
+            event.reply("You can't timeout that user! The user has a higher role or is a moderator!").setEphemeral(true).queue();
             return;
         }
-        int minutes = 0;
-        String reason = "unknown";
-        try {
-            minutes = Integer.parseInt(args.get(1));
-        } catch (Exception ignored) {}
-        try {
-            if (minutes == 0) reason = String.join(" ", args.subList(1, args.size()));
-            else reason = String.join(" ", args.subList(2, args.size()));
-        } catch (Exception ignored) {}
-        try {
-            Tools.muteMember(target, minutes, reason);
-            event.getChannel().sendMessageEmbeds(new EmbedBuilder().setDescription("Successfully sent " + target.getAsMention() + " into timeout!").build()).queue();
-        } catch (Exception e) {
-            event.getChannel().sendMessageEmbeds(new EmbedBuilder().setDescription("Could not send " + target.getAsMention() + " into timeout!").build()).queue();
-        }
+
+        OptionMapping minutes = event.getOption("minutes");
+        OptionMapping reason = event.getOption("reason");
+
+        int minutesAsInt = minutes == null ? 1440 : Math.abs(Math.toIntExact(minutes.getAsLong()));
+
+        Tools.muteMember(target, minutesAsInt, reason == null ? "Unknown." : reason.getAsString());
+        event.reply("Successfully sent " + target.getAsMention() + " into timeout!").queue();
     }
 }

@@ -1,40 +1,36 @@
 package bot.commands;
 
 import bot.Command;
-import bot.Main;
 import bot.database.Database;
-import bot.Tools;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
+import net.dv8tion.jda.api.interactions.commands.OptionMapping;
+import net.dv8tion.jda.api.interactions.commands.OptionType;
+import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 
-import java.util.List;
-
+@SuppressWarnings("ConstantConditions")
 public class Points implements Command {
+
     @Override
-    public String getCommand() {
-        return "points";
+    public CommandData getCommandData() {
+        return new CommandData("points", "Shows the user their reputation in the server.")
+                .addOption(OptionType.USER, "user", "The user whose points you want.");
     }
 
     @Override
-    public String getHelp() {
-        return "Shows the user their reputation in the server!\n" +
-                "Usage: `" + Main.getPrefix() + getCommand() + " [user(optional)]`";
-    }
+    public void run(SlashCommandEvent event) {
+        OptionMapping user = event.getOption("user");
+        Member m = user == null ? event.getMember() : user.getAsMember();
 
-    @Override
-    public void run(List<String> args, MessageReceivedEvent event) {
-        Member m;
-        if (args.size() >= 1)
-            m = Tools.getEffectiveMember(event.getGuild(), String.join(" ", args));
-        else
-            m = event.getMember();
+        int reputation = Database.getReputation(m);
+        int reputationRank = Database.getReputationRank(m);
 
-        event.getChannel().sendMessageEmbeds(
+        event.replyEmbeds(
                 new EmbedBuilder()
                         .setAuthor(m.getEffectiveName(), m.getUser().getAvatarUrl(), m.getUser().getEffectiveAvatarUrl())
-                        .addField("Points:", String.valueOf(Database.getReputation(m)), true)
-                        .addField("Rank: ", String.valueOf(Database.getReputationRank(m)), true)
+                        .addField("Points:", String.valueOf(reputation), true)
+                        .addField("Rank: ", String.valueOf(reputationRank), true)
                         .build()
         ).queue();
     }

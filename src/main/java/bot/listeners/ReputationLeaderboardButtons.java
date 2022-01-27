@@ -1,9 +1,8 @@
 package bot.listeners;
 
-import bot.Main;
+import bot.commands.ReputationLeaderboard;
 import bot.database.Database;
 import bot.database.ReputationsResult;
-import bot.commands.ReputationLeaderboard;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Emoji;
 import net.dv8tion.jda.api.entities.Message;
@@ -15,8 +14,8 @@ import net.dv8tion.jda.api.interactions.components.Button;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
-import java.util.Objects;
 
+@SuppressWarnings({"ConstantConditions", "OptionalGetWithoutIsPresent"})
 public class ReputationLeaderboardButtons extends ListenerAdapter {
     @Override
     public void onButtonClick(@NotNull ButtonClickEvent event) {
@@ -25,7 +24,7 @@ public class ReputationLeaderboardButtons extends ListenerAdapter {
         String[] id = event.getComponentId().split(":");
 
         if (!event.getMember().getId().equals(id[0])) {
-            event.reply("You are not the one who requested the leaderboard. Use `" + Main.getPrefix() + "leaderboard` to create a new one.")
+            event.reply("You are not the one who requested the leaderboard. Use `/lead` to create a new one.")
                     .setEphemeral(true).queue();
         }
 
@@ -38,13 +37,8 @@ public class ReputationLeaderboardButtons extends ListenerAdapter {
 
         switch (id[1]) {
             case "delete": {
-                String msgID = message.getButtons().stream()
-                        .filter(it -> it.getId().contains("delete"))
-                        .findAny().get().getId().split(":")[2];
-
-                event.getChannel().retrieveMessageById(msgID).queue(msg -> msg.delete().queue());
-                event.deferEdit().queue();
                 message.delete().queue();
+                event.deferEdit().queue();
             }
             break;
             case "done": {
@@ -68,9 +62,13 @@ public class ReputationLeaderboardButtons extends ListenerAdapter {
     private void editMessage(Message msg, boolean next, User user, int page) {
         ReputationsResult reputations = Database.getMemberReputationsWithUser(user);
         List<List<ReputationsResult.BMember>> guildsList = reputations.getMemberReputations();
+
         if (page == 0 || page == guildsList.size()) return;
 
+        System.out.println("Current Page: " + page);
         page = next ? page + 1 : page - 1;
+
+        System.out.println(page);
 
         ReputationsResult.BMember member = reputations.getMember();
         EmbedBuilder embed = new EmbedBuilder().setDescription("```" + ReputationLeaderboard.getTable(guildsList.get(page - 1)) + "```")

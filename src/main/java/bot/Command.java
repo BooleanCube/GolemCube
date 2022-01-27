@@ -1,13 +1,10 @@
 package bot;
 
-import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
-
-import java.util.List;
+import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
+import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 
 public interface Command {
-    String getCommand();
+    CommandData getCommandData();
 
-    String getHelp();
-
-    void run(List<String> args, MessageReceivedEvent event);
+    void run(SlashCommandEvent event);
 }
