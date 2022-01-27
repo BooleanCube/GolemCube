@@ -15,7 +15,7 @@ public class Tools {
     public static HashMap<String, List<Warning>> memberToWarns = new HashMap<>();
 
     public static void wrongUsage(MessageChannel tc, Command c) {
-        tc.sendMessage("Wrong Command Usage!\n" + c.getHelp()).queue();
+        tc.sendMessage("Wrong Command Usage!\n" + c.getCommandData().getDescription()).queue();
     }
 
     public static Member getEffectiveMember(Guild g, String s) {

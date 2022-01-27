@@ -23,9 +23,7 @@ public class Suggestions extends ListenerAdapter {
     @Override
     public void onMessageReceived(@NotNull MessageReceivedEvent event) {
         if (!Main.getModuleManager().isEnabled(Module.SUGGESTION_LISTENER)) return;
-        if (event.getAuthor().isBot() || event.getMessage().getContentRaw().toLowerCase().startsWith(Main.getPrefix()))
-            return;
-
+        if (event.getAuthor().isBot()) return;
         if (event.getChannel().getId().equals(channelID)) {
             event.getMessage().delete().queue();
             event.getChannel().sendMessageEmbeds(new EmbedBuilder()
