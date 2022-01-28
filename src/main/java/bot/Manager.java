@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
 public class Manager {
     private final Logger LOGGER = LoggerFactory.getLogger(Manager.class);
     private final Map<String, Command> commands = new HashMap<>();
-    private final Map<String, Long> commandIds = new HashMap<>();
+    private final Map<String, String> commandIds = new HashMap<>();
 
     Manager(JDA jda) {
         //commands
@@ -44,10 +44,12 @@ public class Manager {
         Guild guild = jda.getGuildById(Main.getMainServerId());
 
         // Update Commands only in our guild
-        guild.updateCommands().addCommands(commands).queue(e -> e.forEach(it -> commandIds.put(it.getName(), it.getIdLong())));
+        jda.updateCommands().addCommands(commands).queue(e -> {
+            e.forEach(it -> commandIds.put(it.getName(), it.getId()));
 
-        guild.updateCommandPrivilegesById(commandIds.get("shutdown"), CommandPrivilege.enableUser(Main.getOwnerId())).queue();
-        // We can do the same for other commands, but permissions is not a CommandPrivilege...
+            guild.updateCommandPrivilegesById(commandIds.get("shutdown"),
+                    CommandPrivilege.enableUser(Main.getOwnerId())).queue();
+        });
     }
 
     private void addCommand(Command c) {

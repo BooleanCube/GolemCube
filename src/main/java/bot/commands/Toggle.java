@@ -45,7 +45,7 @@ public class Toggle implements Command {
 
         moduleManager.toggle(type);
         String status = moduleManager.isEnabled(type) ? "on" : "off";
-        event.getChannel().sendMessageEmbeds(new EmbedBuilder()
+        event.replyEmbeds(new EmbedBuilder()
                 .setDescription(type.getName() + " was toggled `" + status + "`")
                 .build()
         ).queue();

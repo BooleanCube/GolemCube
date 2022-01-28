@@ -44,6 +44,6 @@ public class Unmute implements Command {
         }
 
         Tools.unmuteMember(target);
-        event.getChannel().sendMessage("Successfully unmuted " + target.getAsMention()).queue();
+        event.reply("Successfully unmuted " + target.getAsMention()).queue();
     }
 }

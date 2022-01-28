@@ -2,8 +2,9 @@ package bot;
 
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
+import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -14,8 +15,21 @@ import java.util.concurrent.TimeUnit;
 public class Tools {
     public static HashMap<String, List<Warning>> memberToWarns = new HashMap<>();
 
-    public static void wrongUsage(MessageChannel tc, Command c) {
-        tc.sendMessage("Wrong Command Usage!\n" + c.getCommandData().getDescription()).queue();
+    public static void wrongUsage(SlashCommandEvent tc, Command c) {
+        CommandData data = c.getCommandData();
+
+        StringBuilder options = new StringBuilder(" ");
+        StringBuilder optionDescription = new StringBuilder();
+        data.getOptions().forEach(it -> {
+            String optionName = String.format(it.isRequired() ? "[%s] " : "<%s> ", it.getName());
+            options.append(optionName);
+            optionDescription.append(String.format("`%s` : %s\n", optionName, data.getDescription()));
+        });
+
+        tc.reply("Wrong Command Usage!\n" +
+                data.getDescription() + "\n" +
+                data.getName() + options + "\n" +
+                optionDescription).queue();
     }
 
     public static Member getEffectiveMember(Guild g, String s) {

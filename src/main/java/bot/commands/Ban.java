@@ -15,8 +15,7 @@ public class Ban implements Command {
         return new CommandData("ban", "Bans a User from the Server!")
                 .addOption(OptionType.USER, "user", "The user to be banned.", true)
                 .addOption(OptionType.INTEGER, "deldays", "The history of messages, in days, that will be deleted.")
-                .addOption(OptionType.STRING, "reason", "The reason for this action.")
-                .setDefaultEnabled(false);
+                .addOption(OptionType.STRING, "reason", "The reason for this action.");
     }
 
     @Override

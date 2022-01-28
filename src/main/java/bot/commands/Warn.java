@@ -36,7 +36,7 @@ public class Warn implements Command {
                             event.reply("Banned <@" + id + "> from the server because they exceeded `3 warnings`!").queue());
                 }
             } catch (Exception e) {
-                Tools.wrongUsage(event.getChannel(), this);
+                Tools.wrongUsage(event, this);
                 e.printStackTrace();
             }
         } else {
