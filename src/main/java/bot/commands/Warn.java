@@ -28,9 +28,9 @@ public class Warn implements Command {
                 List<Warning> warns = Tools.getWarns(id);
 
                 OptionMapping reason = event.getOption("reason");
-
-                warns.add(new Warning(reason == null ? "No reason provided!" : reason.getAsString(), System.currentTimeMillis()));
-                event.getChannel().sendMessage("Successfully warned <@" + id + "> for `" + reason + "`").queue();
+                String reasonAsString = reason == null ? "No reason provided!" : reason.getAsString();
+                warns.add(new Warning(reasonAsString, System.currentTimeMillis()));
+                event.reply("Successfully warned <@" + id + "> for `" + reasonAsString + "`").queue();
                 if (warns.size() > 3) {
                     event.getGuild().ban(id, 7, "Exceeded 3 warnings!").queue(v ->
                             event.reply("Banned <@" + id + "> from the server because they exceeded `3 warnings`!").queue());
@@ -40,7 +40,7 @@ public class Warn implements Command {
                 e.printStackTrace();
             }
         } else {
-            event.getChannel().sendMessage("You do not have the permission to use this command!").queue();
+            event.reply("You do not have the permission to use this command!").setEphemeral(true).queue();
         }
     }
 }
