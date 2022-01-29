@@ -6,7 +6,6 @@ import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @SuppressWarnings("ConstantConditions")
@@ -30,8 +29,7 @@ public class Purge implements Command {
         if (hundreds == 0) {
             event.getChannel().getHistory().retrievePast(num).queue(msgs -> {
                 event.getChannel().purgeMessages(msgs);
-                event.reply("Successfully purged `" + num + "` messages.")
-                        .queue(m -> m.deleteOriginal().queueAfter(5, TimeUnit.SECONDS));
+                event.reply("Successfully purged `" + num + "` messages.").setEphemeral(true).queue();
             });
             return;
         }
@@ -42,8 +40,7 @@ public class Purge implements Command {
                 if (atomicNum.get() < 100) {
                     event.getChannel().getHistory().retrievePast(atomicNum.get()).queue(msgs -> {
                         event.getChannel().purgeMessages(msgs);
-                        event.getChannel().sendMessage("Successfully purged `" + num + "` messages.")
-                                .queue(m -> m.delete().queueAfter(5, TimeUnit.SECONDS));
+                        event.reply("Successfully purged `" + num + "` messages.").setEphemeral(true).queue();
                     });
                 } else {
                     event.getChannel().getHistory().retrievePast(100).queue(msgs -> {
@@ -53,8 +50,7 @@ public class Purge implements Command {
                 }
             }
         } catch (Exception e) {
-            event.reply("I came across an error while purging! I deleted as many as I could!")
-                    .queue(m -> m.deleteOriginal().queueAfter(5, TimeUnit.SECONDS));
+            event.reply("I came across an error while purging! I deleted as many as I could!").setEphemeral(true).queue();
         }
     }
 }
