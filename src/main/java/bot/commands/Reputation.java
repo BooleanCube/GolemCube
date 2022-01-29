@@ -13,6 +13,12 @@ import java.util.HashMap;
 
 @SuppressWarnings("ConstantConditions")
 public class Reputation implements Command {
+
+    @Override
+    public String getCategory() {
+        return "Reputation";
+    }
+
     private static final HashMap<Long, Long> timeout = new HashMap<>();
 
     @Override

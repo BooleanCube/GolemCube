@@ -13,6 +13,11 @@ import java.util.List;
 public class Warn implements Command {
 
     @Override
+    public String getCategory() {
+        return "Moderation";
+    }
+
+    @Override
     public CommandData getCommandData() {
         return new CommandData("warn", "Warns a member!")
                 .addOption(OptionType.USER, "user", "The user to be warned", true)

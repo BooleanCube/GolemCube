@@ -12,6 +12,11 @@ import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 public class Unmute implements Command {
 
     @Override
+    public String getCategory() {
+        return "Moderation";
+    }
+
+    @Override
     public CommandData getCommandData() {
         return new CommandData("unmute", "Unmutes a Member.")
                 .addOption(OptionType.USER, "user", "User to be muted.", true);

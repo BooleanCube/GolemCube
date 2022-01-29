@@ -18,8 +18,13 @@ import java.util.List;
 public class ReputationLeaderboard implements Command {
 
     @Override
+    public String getCategory() {
+        return "Reputation";
+    }
+
+    @Override
     public CommandData getCommandData() {
-        return new CommandData("lead", "Shows a list of 10 server members with the highest reputation.")
+        return new CommandData("leaderboard", "Shows a list of 10 server members with the highest reputation.")
                 .addOptions(
                         new OptionData(OptionType.INTEGER, "page", "The page number of the leaderboard.").setMinValue(0)
                 );

@@ -13,6 +13,11 @@ import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 public class Points implements Command {
 
     @Override
+    public String getCategory() {
+        return "Reputation";
+    }
+
+    @Override
     public CommandData getCommandData() {
         return new CommandData("points", "Shows the user their reputation in the server.")
                 .addOption(OptionType.USER, "user", "The user whose points you want.");

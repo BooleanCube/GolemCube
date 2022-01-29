@@ -12,6 +12,11 @@ import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 public class Kick implements Command {
 
     @Override
+    public String getCategory() {
+        return "Moderation";
+    }
+
+    @Override
     public CommandData getCommandData() {
         return new CommandData("kick", "Kicks a User from the Server!")
                 .addOption(OptionType.USER, "user", "The user to be kicked.", true)

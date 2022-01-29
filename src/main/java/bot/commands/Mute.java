@@ -13,6 +13,11 @@ import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 public class Mute implements Command {
 
     @Override
+    public String getCategory() {
+        return "Moderation";
+    }
+
+    @Override
     public CommandData getCommandData() {
         return new CommandData("mute", "Mutes a Member using Timeout!")
                 .addOption(OptionType.USER, "user", "User to be muted.", true)

@@ -10,6 +10,12 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 @SuppressWarnings("ConstantConditions")
 public class Purge implements Command {
+
+    @Override
+    public String getCategory() {
+        return "Moderation";
+    }
+
     @Override
     public CommandData getCommandData() {
         return new CommandData("purge", "Purges/Deletes the number of messages given!")

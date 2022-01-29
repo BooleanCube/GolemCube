@@ -10,6 +10,12 @@ import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 
 @SuppressWarnings("ConstantConditions")
 public class Ban implements Command {
+
+    @Override
+    public String getCategory() {
+        return "Moderation";
+    }
+
     @Override
     public CommandData getCommandData() {
         return new CommandData("ban", "Bans a User from the Server!")

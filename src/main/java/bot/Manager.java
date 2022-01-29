@@ -65,6 +65,10 @@ public class Manager {
         return commands.values();
     }
 
+    public Collection<Command> getCommands(String category) {
+        return commands.values().stream().filter(cmd -> cmd.getCategory().equalsIgnoreCase(category)).collect(Collectors.toList());
+    }
+
     void run(SlashCommandEvent event) {
         commands.get(event.getName()).run(event);
     }

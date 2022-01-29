@@ -13,6 +13,11 @@ import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 public class Settings implements Command {
 
     @Override
+    public String getCategory() {
+        return "Auto Moderation";
+    }
+
+    @Override
     public CommandData getCommandData() {
         return new CommandData("settings", "Shows all the settings for this guild!");
     }
