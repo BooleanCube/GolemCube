@@ -40,7 +40,7 @@ public class Help implements Command {
         e.addField("Auto Moderation", auto.substring(0, auto.length() - 2), false);
         e.addField("Moderation", mod.substring(0, mod.length() - 2), false);
 
-        e.setThumbnail(event.getGuild().getSelfMember().getAvatarUrl());
+        e.setThumbnail("https://cdn.discordapp.com/attachments/936805914667810817/936806049002946620/GolemCube.png");
 
         event.replyEmbeds(e.build()).queue();
     }
