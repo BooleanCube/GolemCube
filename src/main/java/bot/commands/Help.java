@@ -32,13 +32,16 @@ public class Help implements Command {
         StringBuilder rep = new StringBuilder();
         StringBuilder auto = new StringBuilder();
         StringBuilder mod = new StringBuilder();
+        StringBuilder misc = new StringBuilder();
         manager.getCommands("Moderation").forEach(command -> mod.append("`").append(command.getCommandData().getName()).append("`, "));
         manager.getCommands("Auto Moderation").forEach(command -> auto.append("`").append(command.getCommandData().getName()).append("`, "));
         manager.getCommands("Reputation").forEach(command -> rep.append("`").append(command.getCommandData().getName()).append("`, "));
+        manager.getCommands("Miscellaneous").forEach(command -> misc.append("`").append(command.getCommandData().getName()).append("`, "));
 
-        e.addField("Reputation", rep.substring(0, rep.length() - 2), false);
-        e.addField("Auto Moderation", auto.substring(0, auto.length() - 2), false);
-        e.addField("Moderation", mod.substring(0, mod.length() - 2), false);
+        e.addField("Reputation", rep.substring(0, rep.length()-2), false);
+        e.addField("Auto Moderation", auto.substring(0, auto.length()-2), false);
+        e.addField("Moderation", mod.substring(0, mod.length()-2), false);
+        e.addField("Miscellaneous", misc.substring(0, misc.length()-2), false);
 
         e.setThumbnail("https://cdn.discordapp.com/attachments/936805914667810817/936806049002946620/GolemCube.png");
 
