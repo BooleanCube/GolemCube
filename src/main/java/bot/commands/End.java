@@ -1,10 +1,10 @@
 package bot.commands;
 
 import bot.Command;
-import bot.Main;
 import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
-import net.dv8tion.jda.api.interactions.commands.build.CommandData;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
+import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
+import net.dv8tion.jda.api.interactions.commands.build.Commands;
 
 public class End implements Command {
 
@@ -12,14 +12,14 @@ public class End implements Command {
     public String getCategory() {
         return "Reputation";
     }
-    
+
     @Override
-    public CommandData getCommandData() {
-        return new CommandData("end", "After helping somebody, use this command if you want to remind them to give you a reputation point!");
+    public SlashCommandData getCommandData() {
+        return Commands.slash("end", "After helping somebody, use this command if you want to remind them to give you a reputation point!");
     }
 
     @Override
-    public void run(SlashCommandEvent event) {
+    public void run(SlashCommandInteractionEvent event) {
         event.replyEmbeds(
                 new EmbedBuilder()
                         .setTitle("Done Receiving Help?")

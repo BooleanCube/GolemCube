@@ -4,9 +4,10 @@ import bot.Command;
 import bot.Tools;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
-import net.dv8tion.jda.api.interactions.commands.build.CommandData;
+import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
+import net.dv8tion.jda.api.interactions.commands.build.Commands;
 
 @SuppressWarnings("ConstantConditions")
 public class Unmute implements Command {
@@ -17,13 +18,13 @@ public class Unmute implements Command {
     }
 
     @Override
-    public CommandData getCommandData() {
-        return new CommandData("unmute", "Unmutes a Member.")
+    public SlashCommandData getCommandData() {
+        return Commands.slash("unmute", "Unmutes a Member.")
                 .addOption(OptionType.USER, "user", "User to be muted.", true);
     }
 
     @Override
-    public void run(SlashCommandEvent event) {
+    public void run(SlashCommandInteractionEvent event) {
         Member member = event.getMember();
         Member target = event.getOption("user").getAsMember();
 

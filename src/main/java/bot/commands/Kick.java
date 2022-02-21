@@ -3,10 +3,11 @@ package bot.commands;
 import bot.Command;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
-import net.dv8tion.jda.api.interactions.commands.build.CommandData;
+import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
+import net.dv8tion.jda.api.interactions.commands.build.Commands;
 
 @SuppressWarnings("ConstantConditions")
 public class Kick implements Command {
@@ -17,14 +18,14 @@ public class Kick implements Command {
     }
 
     @Override
-    public CommandData getCommandData() {
-        return new CommandData("kick", "Kicks a User from the Server!")
+    public SlashCommandData getCommandData() {
+        return Commands.slash("kick", "Kicks a User from the Server!")
                 .addOption(OptionType.USER, "user", "The user to be kicked.", true)
                 .addOption(OptionType.STRING, "reason", "The reason for this action.");
     }
 
     @Override
-    public void run(SlashCommandEvent event) {
+    public void run(SlashCommandInteractionEvent event) {
         Member member = event.getMember();
 
         if (!member.hasPermission(Permission.KICK_MEMBERS)) {
@@ -49,9 +50,9 @@ public class Kick implements Command {
             return;
         }
 
-        OptionMapping reason = event.getOption("reason");
+        String reason = event.getOption("reason", null, OptionMapping::getAsString);
 
-        target.kick(reason == null ? null : reason.getAsString()).queue();
+        target.kick(reason).queue();
         event.reply("Successfully kicked " + target.getUser().getAsTag() + " from the server!").queue();
     }
 }
