@@ -2,9 +2,10 @@ package bot.commands;
 
 import bot.Command;
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
-import net.dv8tion.jda.api.interactions.commands.build.CommandData;
+import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
+import net.dv8tion.jda.api.interactions.commands.build.Commands;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -17,13 +18,13 @@ public class Purge implements Command {
     }
 
     @Override
-    public CommandData getCommandData() {
-        return new CommandData("purge", "Purges/Deletes the number of messages given!")
+    public SlashCommandData getCommandData() {
+        return Commands.slash("purge", "Purges/Deletes the number of messages given!")
                 .addOption(OptionType.INTEGER, "number", "Number of messages to delete", true);
     }
 
     @Override
-    public void run(SlashCommandEvent event) {
+    public void run(SlashCommandInteractionEvent event) {
         if (!event.getMember().hasPermission(Permission.MESSAGE_MANAGE)) {
             event.reply("You don't have the **MESSAGE_MANAGE** permission!").setEphemeral(true).queue();
             return;

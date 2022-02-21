@@ -3,8 +3,9 @@ package bot;
 import bot.commands.*;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
+import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import net.dv8tion.jda.api.interactions.commands.privileges.CommandPrivilege;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,7 +40,7 @@ public class Manager {
         addCommand(new Settings());
 
         List<CommandData> commands = this.commands.values().stream().map(Command::getCommandData).collect(Collectors.toList());
-        commands.add(new CommandData("shutdown", "Shuts down the bot.").setDefaultEnabled(false));
+        commands.add(Commands.slash("shutdown", "Shuts down the bot.").setDefaultEnabled(false));
 
         Guild guild = jda.getGuildById(Main.getMainServerId());
 
@@ -69,7 +70,7 @@ public class Manager {
         return commands.values().stream().filter(cmd -> cmd.getCategory().equalsIgnoreCase(category)).collect(Collectors.toList());
     }
 
-    void run(SlashCommandEvent event) {
+    void run(SlashCommandInteractionEvent event) {
         commands.get(event.getName()).run(event);
     }
 }

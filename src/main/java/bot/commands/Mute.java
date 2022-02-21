@@ -4,10 +4,11 @@ import bot.Command;
 import bot.Tools;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
-import net.dv8tion.jda.api.interactions.commands.build.CommandData;
+import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
+import net.dv8tion.jda.api.interactions.commands.build.Commands;
 
 @SuppressWarnings("ConstantConditions")
 public class Mute implements Command {
@@ -18,15 +19,15 @@ public class Mute implements Command {
     }
 
     @Override
-    public CommandData getCommandData() {
-        return new CommandData("mute", "Mutes a Member using Timeout!")
+    public SlashCommandData getCommandData() {
+        return Commands.slash("mute", "Mutes a Member using Timeout!")
                 .addOption(OptionType.USER, "user", "User to be muted.", true)
                 .addOption(OptionType.INTEGER, "minutes", "Duration for mute in minutes.")
                 .addOption(OptionType.STRING, "reason", "The reason for this action.");
     }
 
     @Override
-    public void run(SlashCommandEvent event) {
+    public void run(SlashCommandInteractionEvent event) {
         Member member = event.getMember();
         Member target = event.getOption("user").getAsMember();
 
@@ -53,12 +54,10 @@ public class Mute implements Command {
             return;
         }
 
-        OptionMapping minutes = event.getOption("minutes");
-        OptionMapping reason = event.getOption("reason");
+        int minutes = event.getOption("minutes", 1400, OptionMapping::getAsInt);
+        String reason = event.getOption("reason", null, OptionMapping::getAsString);
 
-        int minutesAsInt = minutes == null ? 1440 : Math.abs(Math.toIntExact(minutes.getAsLong()));
-
-        Tools.muteMember(target, minutesAsInt, reason == null ? "Unknown." : reason.getAsString());
+        Tools.muteMember(target, minutes, reason);
         event.reply("Successfully sent " + target.getAsMention() + " into timeout!").queue();
     }
 }

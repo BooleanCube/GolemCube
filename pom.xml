@@ -27,7 +27,7 @@
         <dependency>
             <groupId>net.dv8tion</groupId>
             <artifactId>JDA</artifactId>
-            <version>5.0.0-alpha.4</version>
+            <version>5.0.0-alpha.6</version>
         </dependency>
 
         <!-- https://github.com/mongodb/mongo-java-driver -->

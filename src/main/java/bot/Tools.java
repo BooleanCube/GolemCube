@@ -3,8 +3,9 @@ package bot;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.User;
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
+import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -15,8 +16,8 @@ import java.util.concurrent.TimeUnit;
 public class Tools {
     public static HashMap<String, List<Warning>> memberToWarns = new HashMap<>();
 
-    public static void wrongUsage(SlashCommandEvent tc, Command c) {
-        CommandData data = c.getCommandData();
+    public static void wrongUsage(SlashCommandInteractionEvent tc, Command c) {
+        SlashCommandData data = c.getCommandData();
 
         StringBuilder options = new StringBuilder(" ");
         StringBuilder optionDescription = new StringBuilder();

@@ -3,10 +3,11 @@ package bot.commands;
 import bot.Command;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
-import net.dv8tion.jda.api.interactions.commands.build.CommandData;
+import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
+import net.dv8tion.jda.api.interactions.commands.build.Commands;
 
 @SuppressWarnings("ConstantConditions")
 public class Ban implements Command {
@@ -17,15 +18,15 @@ public class Ban implements Command {
     }
 
     @Override
-    public CommandData getCommandData() {
-        return new CommandData("ban", "Bans a User from the Server!")
+    public SlashCommandData getCommandData() {
+        return Commands.slash("ban", "Bans a User from the Server!")
                 .addOption(OptionType.USER, "user", "The user to be banned.", true)
                 .addOption(OptionType.INTEGER, "deldays", "The history of messages, in days, that will be deleted.")
                 .addOption(OptionType.STRING, "reason", "The reason for this action.");
     }
 
     @Override
-    public void run(SlashCommandEvent event) {
+    public void run(SlashCommandInteractionEvent event) {
         Member member = event.getMember();
 
         if (!member.hasPermission(Permission.BAN_MEMBERS)) {
@@ -50,12 +51,10 @@ public class Ban implements Command {
             return;
         }
 
-        OptionMapping delDays = event.getOption("deldays");
-        OptionMapping reason = event.getOption("reason");
+        String reason = event.getOption("reason", null, OptionMapping::getAsString);
+        int delDays = event.getOption("deldays", 1, OptionMapping::getAsInt);
 
-        int delDaysAsInt = Math.abs(Math.toIntExact(delDays == null ? 0 : delDays.getAsLong()));
-
-        target.ban(delDaysAsInt, reason == null ? null : reason.getAsString()).queue();
+        target.ban(delDays, reason).queue();
         event.reply("Successfully banned " + target.getAsMention()).queue();
     }
 }
