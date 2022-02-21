@@ -4,12 +4,12 @@ import bot.Command;
 import bot.database.Database;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
-import net.dv8tion.jda.api.interactions.commands.build.CommandData;
+import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
+import net.dv8tion.jda.api.interactions.commands.build.Commands;
 
-@SuppressWarnings("ConstantConditions")
 public class Points implements Command {
 
     @Override
@@ -18,15 +18,14 @@ public class Points implements Command {
     }
 
     @Override
-    public CommandData getCommandData() {
-        return new CommandData("points", "Shows the user their reputation in the server.")
+    public SlashCommandData getCommandData() {
+        return Commands.slash("points", "Shows the user their reputation in the server.")
                 .addOption(OptionType.USER, "user", "The user whose points you want.");
     }
 
     @Override
-    public void run(SlashCommandEvent event) {
-        OptionMapping user = event.getOption("user");
-        Member m = user == null ? event.getMember() : user.getAsMember();
+    public void run(SlashCommandInteractionEvent event) {
+        Member m = event.getOption("user", event.getMember(), OptionMapping::getAsMember);
 
         int reputation = Database.getReputation(m);
         int reputationRank = Database.getReputationRank(m);

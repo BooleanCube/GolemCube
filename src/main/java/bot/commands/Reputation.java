@@ -5,9 +5,10 @@ import bot.Tools;
 import bot.database.Database;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
-import net.dv8tion.jda.api.interactions.commands.build.CommandData;
+import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
+import net.dv8tion.jda.api.interactions.commands.build.Commands;
 
 import java.util.HashMap;
 
@@ -22,13 +23,13 @@ public class Reputation implements Command {
     private static final HashMap<Long, Long> timeout = new HashMap<>();
 
     @Override
-    public CommandData getCommandData() {
-        return new CommandData("rep", "Adds a reputation point to a user! Give reputation points to people as a sign of appreciation!")
+    public SlashCommandData getCommandData() {
+        return Commands.slash("rep", "Adds a reputation point to a user! Give reputation points to people as a sign of appreciation!")
                 .addOption(OptionType.USER, "user", "The user who helped you ;)", true);
     }
 
     @Override
-    public void run(SlashCommandEvent event) {
+    public void run(SlashCommandInteractionEvent event) {
         Member m = event.getOption("user").getAsMember();
         long userId = event.getMember().getIdLong();
         if (userId == m.getIdLong()) {

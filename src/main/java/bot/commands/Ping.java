@@ -2,8 +2,9 @@ package bot.commands;
 
 import bot.Command;
 import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
-import net.dv8tion.jda.api.interactions.commands.build.CommandData;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
+import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
+import net.dv8tion.jda.api.interactions.commands.build.Commands;
 
 public class Ping implements Command {
 
@@ -13,12 +14,12 @@ public class Ping implements Command {
     }
 
     @Override
-    public CommandData getCommandData() {
-        return new CommandData("ping", "Gives you the gateway and rest ping of the bot.");
+    public SlashCommandData getCommandData() {
+        return Commands.slash("ping", "Gives you the gateway and rest ping of the bot.");
     }
 
     @Override
-    public void run(SlashCommandEvent event) {
+    public void run(SlashCommandInteractionEvent event) {
         event.replyEmbeds(new EmbedBuilder()
                 .setTitle("Pong!")
                 .addField("Gateway Ping", event.getJDA().getGatewayPing() + "ms", true)

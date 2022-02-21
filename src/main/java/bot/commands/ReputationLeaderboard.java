@@ -6,12 +6,13 @@ import bot.database.ReputationsResult;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Emoji;
 import net.dv8tion.jda.api.entities.User;
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
-import net.dv8tion.jda.api.interactions.commands.build.CommandData;
+import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
+import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
-import net.dv8tion.jda.api.interactions.components.Button;
+import net.dv8tion.jda.api.interactions.components.buttons.Button;
 
 import java.util.List;
 
@@ -23,20 +24,19 @@ public class ReputationLeaderboard implements Command {
     }
 
     @Override
-    public CommandData getCommandData() {
-        return new CommandData("leaderboard", "Shows a list of 10 server members with the highest reputation.")
+    public SlashCommandData getCommandData() {
+        return Commands.slash("leaderboard", "Shows a list of 10 server members with the highest reputation.")
                 .addOptions(
                         new OptionData(OptionType.INTEGER, "page", "The page number of the leaderboard.").setMinValue(0)
                 );
     }
 
     @Override
-    public void run(SlashCommandEvent event) {
+    public void run(SlashCommandInteractionEvent event) {
         User author = event.getUser();
         String userId = author.getId();
 
-        OptionMapping pageNumber = event.getOption("page");
-        int page = pageNumber == null ? 1 : Math.toIntExact(pageNumber.getAsLong());
+        int page = event.getOption("page", 1, OptionMapping::getAsInt);
 
         ReputationsResult reputations = Database.getMemberReputationsWithUser(author);
         ReputationsResult.BMember bMember = reputations.getMember();

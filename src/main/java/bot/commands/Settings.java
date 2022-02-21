@@ -6,8 +6,9 @@ import bot.module.Module;
 import bot.module.ModuleManager;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
-import net.dv8tion.jda.api.interactions.commands.build.CommandData;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
+import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
+import net.dv8tion.jda.api.interactions.commands.build.Commands;
 
 @SuppressWarnings("ConstantConditions")
 public class Settings implements Command {
@@ -18,12 +19,12 @@ public class Settings implements Command {
     }
 
     @Override
-    public CommandData getCommandData() {
-        return new CommandData("settings", "Shows all the settings for this guild!");
+    public SlashCommandData getCommandData() {
+        return Commands.slash("settings", "Shows all the settings for this guild!");
     }
 
     @Override
-    public void run(SlashCommandEvent event) {
+    public void run(SlashCommandInteractionEvent event) {
         if (!event.getMember().hasPermission(Permission.MANAGE_SERVER)) return;
 
         ModuleManager moduleManager = Main.getModuleManager();
